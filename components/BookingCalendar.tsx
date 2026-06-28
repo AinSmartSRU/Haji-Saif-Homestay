@@ -216,13 +216,13 @@ export default function BookingCalendar() {
   }
 
   return (
-    <section className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <section className="rounded-[1.75rem] border border-stone-200 bg-white p-4 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-6 md:rounded-[2rem] md:p-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-6">
         <div className="space-y-3">
-          <h2 className="text-2xl font-semibold text-stone-950">
+          <h2 className="text-xl font-semibold text-stone-950 sm:text-2xl">
             Kalendar Tempahan
           </h2>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
             {units.map((unit) => {
               const isSelected = unit.id === selectedUnitId;
 
@@ -231,7 +231,7 @@ export default function BookingCalendar() {
                   key={unit.id}
                   type="button"
                   onClick={() => setSelectedUnitId(unit.id)}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  className={`rounded-full px-3 py-2 text-sm font-semibold transition sm:px-4 ${
                     isSelected
                       ? "bg-stone-950 text-white"
                       : "border border-stone-300 bg-white text-stone-800 hover:bg-stone-50"
@@ -245,31 +245,34 @@ export default function BookingCalendar() {
         </div>
 
         <div className="flex flex-col gap-3 lg:items-end">
-          <div className="rounded-full bg-stone-100 px-4 py-2 text-sm font-semibold text-stone-700">
+          <div className="rounded-full bg-stone-100 px-3 py-2 text-center text-sm font-semibold text-stone-700 sm:px-4">
             {formatMonthLabel(visibleMonth)}
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
             <button
               type="button"
               onClick={() => shiftMonth(-1)}
               disabled={isCurrentVisibleMonth}
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-400"
+              className="rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-400 sm:px-4"
             >
-              Previous
+              <span className="sm:hidden">&lt;</span>
+              <span className="hidden sm:inline">Previous</span>
             </button>
             <button
               type="button"
               onClick={goToCurrentMonth}
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50"
+              className="rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 sm:px-4"
             >
-              Today
+              <span className="sm:hidden">Hari ini</span>
+              <span className="hidden sm:inline">Today</span>
             </button>
             <button
               type="button"
               onClick={() => shiftMonth(1)}
-              className="rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50"
+              className="rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-800 transition hover:bg-stone-50 sm:px-4"
             >
-              Next
+              <span className="sm:hidden">&gt;</span>
+              <span className="hidden sm:inline">Next</span>
             </button>
           </div>
         </div>
@@ -289,7 +292,7 @@ export default function BookingCalendar() {
         </div>
       ) : (
         <>
-          <div className="mt-6 flex flex-wrap gap-3 text-sm">
+          <div className="mt-5 flex flex-wrap gap-2 text-sm sm:mt-6 sm:gap-3">
             {[
               { label: "Tersedia", color: "bg-white border-stone-300" },
               { label: "Ditempah", color: "bg-red-100 border-red-200" },
@@ -297,9 +300,9 @@ export default function BookingCalendar() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-700"
+                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-[11px] font-medium text-stone-700 sm:gap-2 sm:px-3 sm:py-2 sm:text-xs"
               >
-                <span className={`h-3 w-3 rounded-full border ${item.color}`} />
+                <span className={`h-2.5 w-2.5 rounded-full border sm:h-3 sm:w-3 ${item.color}`} />
                 {item.label}
               </div>
             ))}
@@ -378,8 +381,28 @@ export default function BookingCalendar() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3 md:hidden">
-            {monthCells.map((cell) => {
+          <div className="mt-5 md:hidden">
+            <div className="grid grid-cols-7 gap-1.5">
+              {weekdayLabels.map((label) => (
+                <div
+                  key={`mobile-${label}`}
+                  className="py-1 text-center text-[10px] font-semibold tracking-[0.12em] text-stone-500 uppercase"
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-1.5 grid grid-cols-7 gap-1.5">
+              {Array.from({ length: leadingSpacerCount }).map((_, index) => (
+                <div
+                  key={`mobile-spacer-${index}`}
+                  aria-hidden="true"
+                  className="aspect-square rounded-xl border border-transparent"
+                />
+              ))}
+
+              {monthCells.map((cell) => {
               const stateClasses =
                 cell.state === "booked"
                   ? "border-red-200 bg-red-50 text-red-800"
@@ -388,39 +411,40 @@ export default function BookingCalendar() {
               return (
                 <div
                   key={cell.dateString}
-                  className={`rounded-[1.25rem] border p-4 shadow-[0_8px_22px_rgba(88,69,46,0.04)] ${stateClasses} ${
+                  className={`aspect-square rounded-xl border px-1.5 py-1.5 shadow-[0_6px_16px_rgba(88,69,46,0.04)] ${stateClasses} ${
                     cell.isToday
-                      ? "ring-2 ring-stone-500 ring-offset-2 ring-offset-[color:var(--color-background)]"
+                      ? "ring-2 ring-stone-500 ring-offset-1 ring-offset-[color:var(--color-background)]"
                       : ""
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
-                        {cell.weekday}
-                      </p>
-                      <p className="mt-2 text-3xl font-semibold">{cell.dayNumber}</p>
+                  <div className="flex h-full flex-col justify-between">
+                    <div className="flex items-start justify-between gap-1">
+                      <p className="text-sm font-semibold">{cell.dayNumber}</p>
+                      {cell.isToday ? (
+                        <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-stone-700">
+                          Hari ini
+                        </span>
+                      ) : null}
                     </div>
-                    {cell.isToday ? (
-                      <span className="rounded-full bg-stone-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-stone-700">
-                        Hari ini
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="mt-4">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        cell.state === "booked"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-stone-100 text-stone-700"
-                      }`}
-                    >
-                      {cell.state === "booked" ? "Ditempah" : "Tersedia"}
-                    </span>
+                    <div className="flex items-end justify-between gap-1">
+                      {cell.state === "booked" ? (
+                        <span className="text-[9px] font-semibold text-red-700">
+                          Book
+                        </span>
+                      ) : (
+                        <span className="h-2 w-2 rounded-full border border-stone-300 bg-white" />
+                      )}
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          cell.state === "booked" ? "bg-red-500" : "bg-stone-300"
+                        }`}
+                      />
+                    </div>
                   </div>
                 </div>
               );
             })}
+            </div>
           </div>
         </>
       )}
