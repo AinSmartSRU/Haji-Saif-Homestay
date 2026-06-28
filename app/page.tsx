@@ -2,7 +2,10 @@ import Link from "next/link";
 import {
   Bed,
   Car,
+  CalendarCheck2,
+  ClipboardList,
   Droplets,
+  MessageCircle,
   Snowflake,
   Tv,
   Utensils,
@@ -15,7 +18,6 @@ import Navbar from "@/components/Navbar";
 import UnitCard from "@/components/UnitCard";
 import { homepageGalleryImages, unitImages } from "@/lib/imageConfig";
 import {
-  bookingSteps,
   buildWhatsAppUrl,
   homepageUnits,
   SITE_LOCATION,
@@ -65,6 +67,30 @@ const whyChooseUsCards = [
     title: "Lokasi Putatan",
     description:
       "Mudah diakses untuk urusan sekitar Putatan dan Kota Kinabalu. Lokasi homestay sekitar 7km dari Lapangan Terbang Antarabangsa Kota Kinabalu.",
+  },
+];
+
+const bookingSteps = [
+  {
+    step: "Langkah 1",
+    title: "Semak kekosongan",
+    description:
+      "Pilih tarikh dan semak kalendar untuk unit Nonamanis atau Serimuka.",
+    icon: CalendarCheck2,
+  },
+  {
+    step: "Langkah 2",
+    title: "Hantar permintaan",
+    description:
+      "Isi borang tempahan dengan nama, tarikh, jumlah tetamu dan nota jika perlu.",
+    icon: ClipboardList,
+  },
+  {
+    step: "Langkah 3",
+    title: "Sahkan melalui WhatsApp",
+    description:
+      "Admin akan follow up untuk pengesahan slot dan maklumat deposit.",
+    icon: MessageCircle,
   },
 ];
 
@@ -393,21 +419,51 @@ export default function HomePage() {
               Cara Tempah
             </p>
             <h2 className="text-3xl font-semibold text-stone-950">
-              Tempahan dalam beberapa langkah mudah
+              Tempahan mudah dalam 3 langkah
             </h2>
+            <p className="max-w-3xl text-base leading-8 text-stone-700">
+              Semak kekosongan, hantar permintaan tempahan, dan admin akan
+              bantu sahkan slot anda.
+            </p>
           </div>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {bookingSteps.map((step, index) => (
+            {bookingSteps.map((step) => {
+              const Icon = step.icon;
+
+              return (
               <div
-                key={step}
-                className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)]"
+                key={step.title}
+                className="group flex h-full flex-col rounded-[2rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,69,46,0.12)]"
               >
-                <p className="text-sm font-semibold text-[color:var(--color-accent-deep)]">
-                  Langkah {index + 1}
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-accent)]/14 text-[color:var(--color-accent-deep)]">
+                  <Icon size={20} strokeWidth={2} />
+                </div>
+                <p className="mt-5 text-xs font-semibold tracking-[0.18em] text-[color:var(--color-accent-deep)] uppercase">
+                  {step.step}
                 </p>
-                <p className="mt-3 text-sm leading-7 text-stone-700">{step}</p>
+                <h3 className="mt-3 text-xl font-semibold text-stone-950">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-stone-700">
+                  {step.description}
+                </p>
               </div>
-            ))}
+              );
+            })}
+          </div>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/calendar"
+              className="inline-flex items-center justify-center rounded-full bg-stone-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800"
+            >
+              Semak Kekosongan
+            </Link>
+            <Link
+              href="/booking"
+              className="inline-flex items-center justify-center rounded-full border border-stone-300 bg-white px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:bg-stone-50"
+            >
+              Tempah Sekarang
+            </Link>
           </div>
         </section>
       </main>
