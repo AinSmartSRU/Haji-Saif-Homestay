@@ -69,6 +69,29 @@ const featureCards = [
   },
 ];
 
+const whyChooseUsCards = [
+  {
+    title: "2 Unit Bersebelahan",
+    description:
+      "Sesuai untuk keluarga besar atau dua keluarga yang datang bersama.",
+  },
+  {
+    title: "Privasi Penuh",
+    description:
+      "Tiada lobby sesak atau bilik berasingan. Rumah ini untuk keluarga dan kumpulan anda.",
+  },
+  {
+    title: "Ruang Untuk Berkumpul",
+    description:
+      "Boleh makan bersama, berbual, berehat dan rasa seperti di rumah sendiri.",
+  },
+  {
+    title: "Lokasi Putatan",
+    description:
+      "Mudah diakses untuk urusan sekitar Putatan dan Kota Kinabalu. Lokasi homestay sekitar 7km dari Lapangan Terbang Antarabangsa Kota Kinabalu.",
+  },
+];
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
@@ -198,6 +221,48 @@ export default function HomePage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-[2.25rem] border border-stone-800/60 bg-[linear-gradient(135deg,_#3c2d1f,_#1f1812)] px-6 py-10 text-stone-100 shadow-[0_24px_70px_rgba(43,29,16,0.28)] sm:px-8 lg:px-10">
+            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+              <div className="space-y-5">
+                <p className="text-sm font-semibold tracking-[0.24em] text-[color:var(--color-accent)] uppercase">
+                  Kenapa Pilih Kami
+                </p>
+                <h2 className="max-w-xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  Bukan sekadar tempat tidur, tapi tempat berkumpul
+                </h2>
+                <p className="max-w-xl text-base leading-8 text-stone-200">
+                  Hotel mungkin cukup untuk bermalam. Tapi bila datang bersama
+                  keluarga besar atau rombongan kecil, ruang untuk berkumpul
+                  lebih penting. Di Haji Saif Homestay Putatan, semua boleh
+                  tinggal berdekatan dalam suasana rumah yang lebih santai.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {whyChooseUsCards.map((card, index) => (
+                  <article
+                    key={card.title}
+                    className="flex h-full flex-col rounded-[1.75rem] border border-white/10 bg-white/8 p-6 shadow-[0_14px_36px_rgba(15,10,7,0.22)] backdrop-blur-sm transition duration-200 hover:-translate-y-1 hover:shadow-[0_20px_42px_rgba(15,10,7,0.28)]"
+                  >
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--color-accent)]/18 text-sm font-semibold text-[color:var(--color-accent)]">
+                      0{index + 1}
+                    </div>
+                    <div className="mt-5 flex flex-1 flex-col gap-3">
+                      <h3 className="text-xl font-semibold text-white">
+                        {card.title}
+                      </h3>
+                      <p className="text-sm leading-7 text-stone-200">
+                        {card.description}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -344,7 +409,8 @@ export default function HomePage() {
                 </h2>
                 <p className="mt-4 max-w-3xl text-lg leading-8 text-stone-700">
                   Haji Saif Homestay terletak di Putatan, Sabah. Tekan butang
-                  di bawah untuk buka lokasi di Google Maps.
+                  di bawah untuk buka lokasi di Google Maps. Lokasi homestay
+                  sekitar ±7km dari Lapangan Terbang Antarabangsa Kota Kinabalu.
                 </p>
                 <a
                   href={siteConfig.mapUrl}
