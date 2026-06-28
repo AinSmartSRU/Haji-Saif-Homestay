@@ -317,25 +317,45 @@ export default function HomePage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-[0_18px_60px_rgba(88,69,46,0.08)]">
-            <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
-              Lokasi Homestay
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold text-stone-950">
-              Lokasi Homestay
-            </h2>
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-stone-700">
-              Haji Saif Homestay terletak di Putatan, Sabah. Tekan butang di
-              bawah untuk buka lokasi di Google Maps.
-            </p>
-            <a
-              href={siteConfig.mapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-stone-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800"
-            >
-              Buka Google Maps
-            </a>
+          <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-[0_18px_60px_rgba(88,69,46,0.08)] lg:p-10">
+            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+              <div>
+                <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                  Lokasi Homestay
+                </p>
+                <h2 className="mt-3 text-3xl font-semibold text-stone-950">
+                  Lokasi Homestay
+                </h2>
+                <p className="mt-4 max-w-3xl text-lg leading-8 text-stone-700">
+                  Haji Saif Homestay terletak di Putatan, Sabah. Tekan butang
+                  di bawah untuk buka lokasi di Google Maps.
+                </p>
+                <a
+                  href={siteConfig.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-flex items-center justify-center rounded-full bg-stone-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800"
+                >
+                  Buka Google Maps
+                </a>
+              </div>
+
+              <div className="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-stone-50 shadow-[0_18px_50px_rgba(88,69,46,0.08)]">
+                {siteConfig.mapEmbedUrl ? (
+                  <iframe
+                    src={siteConfig.mapEmbedUrl}
+                    title="Lokasi Haji Saif Homestay Putatan"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="h-[320px] w-full border-0 sm:h-[360px] lg:h-[420px]"
+                  />
+                ) : (
+                  <div className="flex h-[320px] w-full items-center justify-center bg-[linear-gradient(180deg,_#f8f1e6,_#efe3d0)] px-6 text-center text-sm font-medium text-stone-600 sm:h-[360px] lg:h-[420px]">
+                    Peta Google Maps akan dikemaskini.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
