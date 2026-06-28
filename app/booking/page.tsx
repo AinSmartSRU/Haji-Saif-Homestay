@@ -32,7 +32,7 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
                 <p className="max-w-2xl text-base leading-8 text-stone-200">
                   Hanya dua unit je, dan tarikh cuti sekolah selalu cepat
                   penuh. Isi borang di bawah, kami WhatsApp anda untuk sahkan
-                  slot dan maklumat deposit.
+                  tempahan.
                 </p>
               </div>
 
@@ -66,6 +66,10 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
                     </span>
                   </div>
                 </div>
+                <p className="mt-4 text-sm leading-7 text-stone-300">
+                  Setiap rumah mempunyai 3 bilik dan sesuai untuk keluarga
+                  atau kumpulan kecil.
+                </p>
 
                 <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   <Link

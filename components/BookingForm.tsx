@@ -195,11 +195,15 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
     <div className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-8">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-stone-900">
-          Isi maklumat tempahan
+          Beritahu kami bila anda nak datang
         </h2>
         <p className="text-sm leading-7 text-stone-600">
-          Permintaan tempahan akan disemak dahulu. Slot hanya dikunci selepas
-          disahkan oleh admin dan deposit diterima.
+          Lepas borang dihantar, kami akan WhatsApp anda untuk sahkan tarikh,
+          bayaran, dan butiran tempahan.
+        </p>
+        <p className="text-sm leading-7 text-stone-500">
+          Tarikh hanya disahkan selepas admin sahkan tempahan dan deposit
+          diterima.
         </p>
       </div>
 
@@ -281,27 +285,30 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <div className="grid gap-5 md:grid-cols-2">
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              Nama Tetamu
+              Nama penuh
               <input
                 value={form.guest_name}
                 onChange={(event) => updateField("guest_name", event.target.value)}
                 className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                placeholder="Nama penuh"
+                placeholder="Nama anda"
                 required
               />
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              Nombor Telefon
+              Nombor WhatsApp
               <input
                 value={form.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
                 className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                placeholder={`Contoh: ${siteConfig.whatsappDisplay}`}
+                placeholder="Nombor yang aktif WhatsApp"
                 required
               />
+              <p className="text-xs font-normal text-stone-500">
+                Contoh: {siteConfig.whatsappDisplay}
+              </p>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              Pilih Unit
+              Rumah pilihan
               <select
                 value={form.unit_id}
                 onChange={(event) => updateField("unit_id", event.target.value)}
@@ -316,7 +323,7 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
               </select>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              Jumlah Tetamu
+              Berapa orang yang datang?
               <input
                 type="number"
                 min={1}
@@ -327,11 +334,11 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
                 required
               />
               <p className="text-xs font-normal text-stone-500">
-                Maksimum {siteConfig.maxGuestsPerUnit} tetamu untuk setiap rumah.
+                Setiap unit boleh muat sehingga 10 orang.
               </p>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              Check-in
+              Tarikh check-in
               <input
                 type="date"
                 value={form.check_in}
@@ -340,16 +347,16 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
                 required
               />
             </label>
-          <label className="space-y-2 text-sm font-medium text-stone-700">
-            Check-out
-            <input
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Tarikh check-out
+              <input
                 type="date"
                 value={form.check_out}
                 onChange={(event) => updateField("check_out", event.target.value)}
                 className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-              required
-            />
-          </label>
+                required
+              />
+            </label>
           </div>
 
           <div className="flex flex-col gap-2 text-sm text-stone-600">
@@ -360,18 +367,22 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
               Semak kalendar tempahan
             </Link>
             <p>
-              Permintaan berstatus pending mungkin masih dalam semakan, tetapi
-              hanya tempahan confirmed akan menghalang pilihan tarikh anda.
+              Tarikh yang masih kosong boleh ditempah. Kami akan sahkan
+              ketersediaan semasa kami hubungi anda.
+            </p>
+            <p>
+              Hanya tempahan yang telah disahkan akan mengunci tarikh di
+              kalendar.
             </p>
           </div>
 
           <label className="block space-y-2 text-sm font-medium text-stone-700">
-            Nota Tambahan
+            Ada apa-apa yang kami perlu tahu?
             <textarea
               value={form.notes}
               onChange={(event) => updateField("notes", event.target.value)}
               className="min-h-32 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-              placeholder="Contoh: waktu tiba, keperluan keluarga, atau pertanyaan lain"
+              placeholder="Masa anda nak tiba, keperluan khas, atau apa-apa soalan untuk kami."
             />
           </label>
 
