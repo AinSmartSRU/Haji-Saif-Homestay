@@ -206,9 +206,14 @@ export default function AdminPage() {
                       <p className="mt-2 font-semibold text-stone-900">
                         {booking.units?.name ?? "Tidak diketahui"}
                       </p>
-                      <p className="mt-1 text-sm text-stone-600">
-                        {booking.guests} tetamu
-                      </p>
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-stone-600">
+                        <span>{booking.guests} tetamu</span>
+                        {booking.guests > siteConfig.maxGuestsPerUnit ? (
+                          <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
+                            Lebih had
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                     <div>
                       <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">

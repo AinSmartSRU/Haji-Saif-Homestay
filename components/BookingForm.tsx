@@ -6,9 +6,8 @@ import {
   buildWhatsAppUrl,
   formatDate,
   type Unit,
-  type BookingStatus,
 } from "@/lib/site";
-import { normalizeDateString, rangesOverlap } from "@/lib/bookingDates";
+import { normalizeDateString } from "@/lib/bookingDates";
 import { siteConfig } from "@/lib/siteConfig";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 
@@ -44,11 +43,6 @@ type SuccessState = {
   checkOut: string;
   guests: string;
   notes: string;
-};
-
-type ConfirmedBooking = {
-  check_in: string;
-  check_out: string;
 };
 
 export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
@@ -129,12 +123,15 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
 
     const guestCount = Number(form.guests);
 
-    if (
-      !Number.isInteger(guestCount) ||
-      guestCount < 1 ||
-      guestCount > siteConfig.maxGuestsPerUnit
-    ) {
-      setError("Jumlah tetamu mestilah antara 1 hingga 10 orang.");
+    if (!Number.isInteger(guestCount) || guestCount < 1) {
+      setError("Jumlah tetamu mesti sekurang-kurangnya 1 orang.");
+      return;
+    }
+
+    if (guestCount > siteConfig.maxGuestsPerUnit) {
+      setError(
+        `Maksimum tetamu untuk setiap unit ialah ${siteConfig.maxGuestsPerUnit} orang.`,
+      );
       return;
     }
 
@@ -146,54 +143,30 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
     }
 
     setSubmitting(true);
-
-    const status: BookingStatus = "pending";
-
-    const { data: confirmedBookings, error: conflictError } = await supabase
-      .from("bookings")
-      .select("check_in, check_out")
-      .eq("unit_id", form.unit_id)
-      .eq("status", "confirmed");
-
-    if (conflictError) {
-      setSubmitting(false);
-      setError("Semakan tarikh tidak berjaya. Sila cuba lagi.");
-      return;
-    }
-
-    const overlapsConfirmed = ((confirmedBookings ?? []) as ConfirmedBooking[]).some(
-      (booking) =>
-        rangesOverlap(
-          booking.check_in,
-          booking.check_out,
-          form.check_in,
-          form.check_out,
-        ),
-    );
-
-    if (overlapsConfirmed) {
-      setSubmitting(false);
-      setError(
-        "Tarikh ini sudah ditempah untuk unit yang dipilih. Sila pilih tarikh lain.",
-      );
-      return;
-    }
-
-    const { error: insertError } = await supabase.from("bookings").insert({
-      unit_id: form.unit_id,
-      guest_name: form.guest_name,
-      phone: form.phone,
-      check_in: form.check_in,
-      check_out: form.check_out,
-      guests: guestCount,
-      notes: form.notes || null,
-      status,
+    const response = await fetch("/api/bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        unit_id: form.unit_id,
+        guest_name: form.guest_name,
+        phone: form.phone,
+        check_in: form.check_in,
+        check_out: form.check_out,
+        guests: guestCount,
+        notes: form.notes || null,
+      }),
     });
-
     setSubmitting(false);
 
-    if (insertError) {
-      setError("Permintaan tempahan tidak berjaya dihantar. Sila cuba lagi.");
+    const result = (await response.json()) as { error?: string };
+
+    if (!response.ok) {
+      setError(
+        result.error ||
+          "Permintaan tempahan tidak berjaya dihantar. Sila cuba lagi.",
+      );
       return;
     }
 
@@ -222,11 +195,11 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
     <div className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-8">
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-stone-900">
-          Borang Permintaan Tempahan
+          Isi maklumat tempahan
         </h2>
         <p className="text-sm leading-7 text-stone-600">
-          Isi maklumat anda untuk semakan tempahan. Kami akan menghubungi anda
-          semula untuk pengesahan.
+          Permintaan tempahan akan disemak dahulu. Slot hanya dikunci selepas
+          disahkan oleh admin dan deposit diterima.
         </p>
       </div>
 
@@ -349,12 +322,15 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
               <input
                 type="number"
                 min={1}
-                max={10}
+                max={siteConfig.maxGuestsPerUnit}
                 value={form.guests}
                 onChange={(event) => updateField("guests", event.target.value)}
                 className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
                 required
               />
+              <p className="text-xs font-normal text-stone-500">
+                Maksimum {siteConfig.maxGuestsPerUnit} tetamu untuk setiap rumah.
+              </p>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
               Check-in
