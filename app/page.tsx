@@ -67,7 +67,7 @@ const featureCards = [
   {
     title: "Maksimum 10 tetamu/unit",
     description:
-      "Sesuai untuk percutian keluarga, urusan majlis, atau tetamu dari luar kawasan.",
+      "Sesuai untuk percutian keluarga, urusan majlis dan tetamu dari luar kawasan.",
   },
   {
     title: "Ruang tamu & dapur",
@@ -77,7 +77,7 @@ const featureCards = [
   {
     title: "Deposit RM100",
     description:
-      "Tempahan lebih mudah dengan deposit rendah untuk lock slot selepas disahkan.",
+      "Tempahan lebih mudah dengan deposit rendah selepas slot disahkan.",
   },
   {
     title: "Lokasi Putatan",
@@ -320,33 +320,33 @@ export default function HomePage() {
                 </p>
                 <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-[0_18px_50px_rgba(88,69,46,0.08)]">
                   <ImageWithFallback
-                    src="/nonamanis-ruangtamu-1.webp"
-                    alt="Ruang tamu unit Nonamanis di Haji Saif Homestay Putatan"
-                    label="Ruang tamu untuk berkumpul bersama"
+                    src="/serimuka-ruangtamu-1.webp"
+                    alt="Ruang tamu unit Serimuka di Haji Saif Homestay Putatan"
                     aspectClassName="aspect-[16/11]"
                     sizes="(min-width: 1024px) 40vw, 100vw"
                     className="rounded-none shadow-none"
+                    imageClassName="object-cover object-center"
                   />
                 </div>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {featureCards.map((feature, index) => (
                   <article
                     key={feature.title}
-                    className={`group rounded-[1.75rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_14px_40px_rgba(88,69,46,0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,69,46,0.12)] ${
-                      index % 3 === 0 ? "xl:translate-y-4" : ""
-                    }`}
+                    className="group flex h-full flex-col rounded-[1.75rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_14px_40px_rgba(88,69,46,0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-md"
                   >
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--color-accent)]/14 text-sm font-semibold text-[color:var(--color-accent-deep)]">
                       0{index + 1}
                     </div>
-                    <h3 className="mt-5 text-lg font-semibold text-stone-950">
-                      {feature.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-stone-700">
-                      {feature.description}
-                    </p>
+                    <div className="mt-5 flex flex-1 flex-col gap-3">
+                      <h3 className="text-lg font-semibold text-stone-950">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm leading-7 text-stone-700">
+                        {feature.description}
+                      </p>
+                    </div>
                   </article>
                 ))}
               </div>
