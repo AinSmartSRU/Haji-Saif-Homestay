@@ -1,5 +1,14 @@
 "use client";
 
+import {
+  CalendarCheck,
+  CalendarDays,
+  Home,
+  MessageSquare,
+  Phone,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -44,6 +53,17 @@ type SuccessState = {
   guests: string;
   notes: string;
 };
+
+const sectionHeadingClass =
+  "text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase";
+const fieldShellClass =
+  "space-y-2 rounded-[1.5rem] border border-stone-200/90 bg-stone-50/80 p-4 shadow-[0_8px_24px_rgba(88,69,46,0.04)] transition focus-within:border-[color:var(--color-accent)] focus-within:bg-white focus-within:shadow-[0_14px_32px_rgba(88,69,46,0.08)]";
+const fieldLabelClass =
+  "inline-flex items-center gap-2 text-sm font-semibold text-stone-800";
+const fieldClass =
+  "w-full rounded-2xl border border-stone-200 bg-white px-4 py-3.5 text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-[color:var(--color-accent)] focus:ring-4 focus:ring-[color:rgba(191,142,69,0.14)]";
+const helperClass = "text-xs leading-6 text-stone-500";
+const iconClass = "h-[17px] w-[17px] text-[color:var(--color-accent-deep)]";
 
 export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
   const [units, setUnits] = useState<Unit[]>([]);
@@ -192,12 +212,15 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
     : "";
 
   return (
-    <div className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-8">
-      <div className="space-y-2">
-        <h2 className="text-2xl font-semibold text-stone-900">
+    <div className="rounded-[2rem] border border-stone-200/90 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(248,245,239,0.94))] p-6 shadow-[0_22px_70px_rgba(88,69,46,0.1)] sm:p-8 md:rounded-[2rem] lg:p-10">
+      <div className="max-w-2xl space-y-3">
+        <p className="text-xs font-semibold tracking-[0.24em] text-[color:var(--color-accent-deep)] uppercase">
+          Borang Tempahan
+        </p>
+        <h2 className="text-2xl font-semibold tracking-tight text-stone-900 sm:text-[2rem]">
           Beritahu kami bila anda nak datang
         </h2>
-        <p className="text-sm leading-7 text-stone-600">
+        <p className="text-sm leading-7 text-stone-600 sm:text-[15px]">
           Lepas borang dihantar, kami akan WhatsApp anda untuk sahkan tarikh,
           bayaran, dan butiran tempahan.
         </p>
@@ -283,117 +306,156 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
           Nak buat tempahan lain? Reload halaman ini.
         </div>
       ) : (
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <div className="grid gap-5 md:grid-cols-2">
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Nama penuh
-              <input
-                value={form.guest_name}
-                onChange={(event) => updateField("guest_name", event.target.value)}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                placeholder="Nama anda"
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Nombor WhatsApp
-              <input
-                value={form.phone}
-                onChange={(event) => updateField("phone", event.target.value)}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                placeholder="Nombor yang aktif WhatsApp"
-                required
-              />
-              <p className="text-xs font-normal text-stone-500">
-                Contoh: {siteConfig.whatsappDisplay}
-              </p>
-            </label>
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Rumah pilihan
-              <select
-                value={form.unit_id}
-                onChange={(event) => updateField("unit_id", event.target.value)}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                required
+        <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
+          <section className="space-y-4">
+            <p className={sectionHeadingClass}>Maklumat tetamu</p>
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className={fieldShellClass}>
+                <span className={fieldLabelClass}>
+                  <User className={iconClass} />
+                  Nama penuh
+                </span>
+                <input
+                  value={form.guest_name}
+                  onChange={(event) => updateField("guest_name", event.target.value)}
+                  className={fieldClass}
+                  placeholder="Nama anda"
+                  required
+                />
+              </label>
+              <label className={fieldShellClass}>
+                <span className={fieldLabelClass}>
+                  <Phone className={iconClass} />
+                  Nombor WhatsApp
+                </span>
+                <input
+                  value={form.phone}
+                  onChange={(event) => updateField("phone", event.target.value)}
+                  className={fieldClass}
+                  placeholder="Nombor yang aktif WhatsApp"
+                  required
+                />
+                <p className={helperClass}>Contoh: {siteConfig.whatsappDisplay}</p>
+              </label>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <p className={sectionHeadingClass}>Butiran penginapan</p>
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className={fieldShellClass}>
+                <span className={fieldLabelClass}>
+                  <Home className={iconClass} />
+                  Rumah pilihan
+                </span>
+                <select
+                  value={form.unit_id}
+                  onChange={(event) => updateField("unit_id", event.target.value)}
+                  className={fieldClass}
+                  required
+                >
+                  {units.map((unit) => (
+                    <option key={unit.id} value={unit.id}>
+                      {unit.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={fieldShellClass}>
+                <span className={fieldLabelClass}>
+                  <Users className={iconClass} />
+                  Berapa orang yang datang?
+                </span>
+                <input
+                  type="number"
+                  min={1}
+                  max={siteConfig.maxGuestsPerUnit}
+                  value={form.guests}
+                  onChange={(event) => updateField("guests", event.target.value)}
+                  className={fieldClass}
+                  required
+                />
+                <p className={helperClass}>
+                  Setiap unit boleh muat sehingga 10 orang.
+                </p>
+              </label>
+              <label className={fieldShellClass}>
+                <span className={fieldLabelClass}>
+                  <CalendarDays className={iconClass} />
+                  Tarikh check-in
+                </span>
+                <input
+                  type="date"
+                  value={form.check_in}
+                  onChange={(event) => updateField("check_in", event.target.value)}
+                  className={fieldClass}
+                  required
+                />
+              </label>
+              <label className={fieldShellClass}>
+                <span className={fieldLabelClass}>
+                  <CalendarCheck className={iconClass} />
+                  Tarikh check-out
+                </span>
+                <input
+                  type="date"
+                  value={form.check_out}
+                  onChange={(event) => updateField("check_out", event.target.value)}
+                  className={fieldClass}
+                  required
+                />
+              </label>
+            </div>
+
+            <div className="rounded-[1.5rem] border border-[color:rgba(191,142,69,0.22)] bg-[linear-gradient(180deg,_rgba(247,239,223,0.72),_rgba(252,248,241,0.98))] p-5 text-sm leading-7 text-stone-700">
+              <Link
+                href="/calendar"
+                className="inline-flex items-center gap-2 font-semibold text-[color:var(--color-accent-deep)] transition hover:text-stone-950"
               >
-                {units.map((unit) => (
-                  <option key={unit.id} value={unit.id}>
-                    {unit.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Berapa orang yang datang?
-              <input
-                type="number"
-                min={1}
-                max={siteConfig.maxGuestsPerUnit}
-                value={form.guests}
-                onChange={(event) => updateField("guests", event.target.value)}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                required
-              />
-              <p className="text-xs font-normal text-stone-500">
-                Setiap unit boleh muat sehingga 10 orang.
+                <CalendarDays className={iconClass} />
+                Semak kalendar tempahan
+              </Link>
+              <p className="mt-2">
+                Tarikh yang bertanda dalam kalendar dah ada orang book. Yang
+                lain masih kosong — kami akan confirm bila kami WhatsApp anda.
               </p>
-            </label>
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Tarikh check-in
-              <input
-                type="date"
-                value={form.check_in}
-                onChange={(event) => updateField("check_in", event.target.value)}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                required
-              />
-            </label>
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Tarikh check-out
-              <input
-                type="date"
-                value={form.check_out}
-                onChange={(event) => updateField("check_out", event.target.value)}
-                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                required
-              />
-            </label>
-          </div>
+            </div>
+          </section>
 
-          <div className="flex flex-col gap-2 text-sm text-stone-600">
-            <Link
-              href="/calendar"
-              className="font-semibold text-[color:var(--color-accent-deep)] transition hover:text-stone-950"
-            >
-              Semak kalendar tempahan
-            </Link>
-            <p>
-              Tarikh yang bertanda dalam kalendar dah ada orang book. Yang
-              lain masih kosong — kami akan confirm bila kami WhatsApp anda.
+          <section className="space-y-4">
+            <p className={sectionHeadingClass}>Nota tambahan</p>
+            <label className={fieldShellClass}>
+              <span className={fieldLabelClass}>
+                <MessageSquare className={iconClass} />
+                Ada apa-apa yang kami perlu tahu?
+              </span>
+              <textarea
+                value={form.notes}
+                onChange={(event) => updateField("notes", event.target.value)}
+                className={`${fieldClass} min-h-32 resize-y`}
+                placeholder="Masa anda nak tiba, keperluan khas, atau apa-apa soalan untuk kami."
+              />
+            </label>
+          </section>
+
+          <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50/70 p-4 sm:p-5">
+            <p className="text-sm leading-7 text-stone-600">
+              Selepas hantar, kami akan WhatsApp anda untuk sahkan slot.
             </p>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-6 text-stone-500">
+                Maksimum 10 orang untuk setiap rumah, tertakluk kepada tarikh
+                yang masih kosong.
+              </p>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex w-full items-center justify-center rounded-full bg-stone-950 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400 sm:w-auto sm:min-w-[240px]"
+              >
+                {submitting ? "Menghantar..." : "Hantar Permintaan Tempahan"}
+              </button>
+            </div>
           </div>
-
-          <label className="block space-y-2 text-sm font-medium text-stone-700">
-            Ada apa-apa yang kami perlu tahu?
-            <textarea
-              value={form.notes}
-              onChange={(event) => updateField("notes", event.target.value)}
-              className="min-h-32 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-              placeholder="Masa anda nak tiba, keperluan khas, atau apa-apa soalan untuk kami."
-            />
-          </label>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="inline-flex rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
-          >
-            {submitting ? "Menghantar..." : "Hantar Permintaan Tempahan"}
-          </button>
-          <p className="text-sm leading-7 text-stone-600">
-            Nota: Tempahan hanya disahkan selepas pihak homestay mengesahkan
-            slot dan deposit diterima.
-          </p>
         </form>
       )}
     </div>
