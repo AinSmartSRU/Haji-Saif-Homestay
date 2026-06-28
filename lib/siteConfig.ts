@@ -4,6 +4,7 @@ export const siteConfig = {
   adminName: "Pn Zarina",
   whatsappDisplay: "012-886 2408",
   whatsappNumber: "60128862408",
+  mapUrl: "https://maps.app.goo.gl/PsAgNW342m4i1QHv6",
   promoPrice: 195,
   normalPrice: 250,
   deposit: 100,

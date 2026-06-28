@@ -46,6 +46,14 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
               >
                 Semak kalendar tempahan
               </Link>
+              <a
+                href={siteConfig.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex text-sm font-semibold text-[color:var(--color-accent-deep)] transition hover:text-stone-950"
+              >
+                Lihat lokasi homestay di Google Maps
+              </a>
             </div>
           </section>
 

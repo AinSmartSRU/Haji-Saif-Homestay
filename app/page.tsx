@@ -80,6 +80,14 @@ export default function HomePage() {
                   Semak Kalendar
                 </Link>
                 <a
+                  href={siteConfig.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-full border border-stone-300 bg-[color:var(--color-surface)] px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:border-stone-400 hover:bg-stone-50"
+                >
+                  Lihat Lokasi
+                </a>
+                <a
                   href={buildWhatsAppUrl(
                     `Hi ${siteConfig.adminName}, saya berminat untuk bertanya tentang ${siteConfig.siteName}.`,
                   )}
@@ -219,6 +227,29 @@ export default function HomePage() {
                 {item}
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-[0_18px_60px_rgba(88,69,46,0.08)]">
+            <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+              Lokasi Homestay
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-stone-950">
+              Lokasi Homestay
+            </h2>
+            <p className="mt-4 max-w-3xl text-lg leading-8 text-stone-700">
+              Haji Saif Homestay terletak di Putatan, Sabah. Tekan butang di
+              bawah untuk buka lokasi di Google Maps.
+            </p>
+            <a
+              href={siteConfig.mapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center justify-center rounded-full bg-stone-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800"
+            >
+              Buka Google Maps
+            </a>
           </div>
         </section>
 

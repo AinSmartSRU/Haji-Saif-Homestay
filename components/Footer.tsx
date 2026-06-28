@@ -27,6 +27,17 @@ export default function Footer() {
                 {siteConfig.whatsappDisplay}
               </a>
             </p>
+            <p>Lokasi: {siteConfig.location}</p>
+            <p>
+              <a
+                href={siteConfig.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-stone-100 underline decoration-stone-500 underline-offset-4 transition hover:text-[color:var(--color-accent)]"
+              >
+                Buka Google Maps
+              </a>
+            </p>
           </div>
         </div>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
