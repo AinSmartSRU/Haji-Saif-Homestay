@@ -7,7 +7,6 @@ import { homepageGalleryImages, unitImages } from "@/lib/imageConfig";
 import {
   bookingSteps,
   buildWhatsAppUrl,
-  facilities,
   homepageUnits,
   SITE_LOCATION,
   SITE_NAME,
@@ -52,6 +51,39 @@ const heroStats = [
   "3 Bilik",
   "10 Tetamu/unit",
   "RM195 Promo",
+];
+
+const featureCards = [
+  {
+    title: "2 unit bersebelahan",
+    description:
+      "Sesuai untuk keluarga besar atau kumpulan kecil yang mahu tinggal dekat dalam satu kawasan.",
+  },
+  {
+    title: "3 bilik setiap rumah",
+    description:
+      "Ruang tidur lebih selesa untuk keluarga, anak-anak dan tetamu.",
+  },
+  {
+    title: "Maksimum 10 tetamu/unit",
+    description:
+      "Sesuai untuk percutian keluarga, urusan majlis, atau tetamu dari luar kawasan.",
+  },
+  {
+    title: "Ruang tamu & dapur",
+    description:
+      "Mudah untuk berkumpul, makan bersama dan berehat seperti di rumah sendiri.",
+  },
+  {
+    title: "Deposit RM100",
+    description:
+      "Tempahan lebih mudah dengan deposit rendah untuk lock slot selepas disahkan.",
+  },
+  {
+    title: "Lokasi Putatan",
+    description:
+      "Mudah diakses untuk keluarga, pelancong dan urusan sekitar Putatan.",
+  },
 ];
 
 export default function HomePage() {
@@ -273,24 +305,51 @@ export default function HomePage() {
         </section>
 
         <section className="bg-[color:var(--color-surface)]">
-          <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
-            <div className="space-y-4">
-              <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
-                Kemudahan
-              </p>
-              <h2 className="text-3xl font-semibold text-stone-950">
-                Penginapan yang ringkas, kemas, dan mudah diurus
-              </h2>
-            </div>
-            <div className="grid gap-4">
-              {facilities.map((facility) => (
-                <div
-                  key={facility}
-                  className="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-4 text-sm leading-7 text-stone-700"
-                >
-                  {facility}
+          <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+            <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+              <div className="space-y-5">
+                <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                  Kemudahan
+                </p>
+                <h2 className="max-w-xl text-3xl font-semibold text-stone-950 sm:text-4xl">
+                  Sesuai untuk keluarga yang mahu menginap bersama
+                </h2>
+                <p className="max-w-xl text-lg leading-8 text-stone-700">
+                  Lebih ruang untuk berkumpul, berehat dan bermalam bersama
+                  keluarga berbanding tinggal berasingan di bilik hotel.
+                </p>
+                <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-[0_18px_50px_rgba(88,69,46,0.08)]">
+                  <ImageWithFallback
+                    src="/nonamanis-ruangtamu-1.webp"
+                    alt="Ruang tamu unit Nonamanis di Haji Saif Homestay Putatan"
+                    label="Ruang tamu untuk berkumpul bersama"
+                    aspectClassName="aspect-[16/11]"
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    className="rounded-none shadow-none"
+                  />
                 </div>
-              ))}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {featureCards.map((feature, index) => (
+                  <article
+                    key={feature.title}
+                    className={`group rounded-[1.75rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_14px_40px_rgba(88,69,46,0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,69,46,0.12)] ${
+                      index % 3 === 0 ? "xl:translate-y-4" : ""
+                    }`}
+                  >
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--color-accent)]/14 text-sm font-semibold text-[color:var(--color-accent-deep)]">
+                      0{index + 1}
+                    </div>
+                    <h3 className="mt-5 text-lg font-semibold text-stone-950">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-7 text-stone-700">
+                      {feature.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
