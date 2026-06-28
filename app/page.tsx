@@ -116,10 +116,14 @@ export default function HomePage() {
                   Dua rumah. Satu kenangan.
                 </h1>
                 <p className="max-w-3xl text-base leading-7 text-stone-100/88 sm:text-lg sm:leading-8">
-                  Haji Saif Homestay Putatan menyediakan 2 unit rumah
-                  bersebelahan, khas untuk keluarga dan kumpulan yang nak
-                  berkumpul betul-betul, bukan sekadar tidur berdekatan. Lebih
-                  privasi. Lebih ruang. Lebih rasa macam rumah sendiri.
+                  Dua unit bersebelahan. Bukan hotel. Ini rumah.
+                  <br />
+                  Untuk keluarga dan rombongan yang nak betul-betul ada{" "}
+                  <span className="text-[1.08em] font-bold text-white">
+                    MASA
+                  </span>{" "}
+                  sama-sama — makan sekali, gelak sekali, rehat pun rasa macam
+                  tak ke mana-mana.
                 </p>
               </div>
               <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-3">
