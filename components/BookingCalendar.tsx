@@ -51,6 +51,15 @@ function isSameMonth(left: Date, right: Date) {
   );
 }
 
+function getMondayFirstIndex(dateString: string) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return (date.getDay() + 6) % 7;
+}
+
+const weekdayLabels = ["ISN", "SEL", "RAB", "KHA", "JUM", "SAB", "AHD"];
+
 export default function BookingCalendar() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [bookings, setBookings] = useState<CalendarBooking[]>([]);
@@ -162,6 +171,14 @@ export default function BookingCalendar() {
 
     return cells;
   }, [bookedDates, isCurrentVisibleMonth, today, visibleMonth]);
+
+  const leadingSpacerCount = useMemo(() => {
+    if (monthCells.length === 0) {
+      return 0;
+    }
+
+    return getMondayFirstIndex(monthCells[0].dateString);
+  }, [monthCells]);
 
   function shiftMonth(direction: -1 | 1) {
     setVisibleMonth((current) => {
@@ -280,7 +297,27 @@ export default function BookingCalendar() {
             </p>
           ) : null}
 
-          <div className="mt-6 hidden grid-cols-7 gap-2 md:grid">
+          <div className="mt-6 hidden md:block">
+            <div className="grid grid-cols-7 gap-2">
+              {weekdayLabels.map((label) => (
+                <div
+                  key={label}
+                  className="px-2 py-3 text-center text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase"
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-2 grid grid-cols-7 gap-2">
+              {Array.from({ length: leadingSpacerCount }).map((_, index) => (
+                <div
+                  key={`spacer-${index}`}
+                  aria-hidden="true"
+                  className="min-h-28 rounded-[1.25rem] border border-transparent"
+                />
+              ))}
+
             {monthCells.map((cell) => {
               const stateClasses =
                 cell.state === "booked"
@@ -323,6 +360,7 @@ export default function BookingCalendar() {
                 </div>
               );
             })}
+            </div>
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3 md:hidden">
