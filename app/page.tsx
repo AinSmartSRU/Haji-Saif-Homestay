@@ -1,4 +1,14 @@
 import Link from "next/link";
+import {
+  Bed,
+  Car,
+  Droplets,
+  Snowflake,
+  Tv,
+  Utensils,
+  WashingMachine,
+  Wifi,
+} from "lucide-react";
 import Footer from "@/components/Footer";
 import ImageWithFallback from "@/components/ImageWithFallback";
 import Navbar from "@/components/Navbar";
@@ -25,14 +35,14 @@ const previewUnits = homepageUnits.map((unit) => ({
 }));
 
 const facilityChips = [
-  "WiFi laju",
-  "Aircond",
-  "Dapur lengkap",
-  "Mesin basuh",
-  "Parking percuma",
-  "Smart TV",
-  "Tilam berkualiti",
-  "Air panas",
+  { label: "WiFi", icon: Wifi },
+  { label: "Aircond", icon: Snowflake },
+  { label: "Dapur lengkap", icon: Utensils },
+  { label: "Mesin basuh", icon: WashingMachine },
+  { label: "Parking percuma", icon: Car },
+  { label: "Smart TV", icon: Tv },
+  { label: "Tilam berkualiti", icon: Bed },
+  { label: "Air panas", icon: Droplets },
 ];
 
 const whyChooseUsCards = [
@@ -252,14 +262,23 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                {facilityChips.map((item) => (
+                {facilityChips.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
                   <div
-                    key={item}
-                    className="rounded-full border border-[color:var(--color-accent)]/25 bg-white/88 px-4 py-3 text-sm font-semibold text-stone-800 shadow-[0_10px_25px_rgba(88,69,46,0.06)]"
+                    key={item.label}
+                    className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-accent)]/25 bg-white/88 px-4 py-3 text-sm font-semibold text-stone-800 shadow-[0_10px_25px_rgba(88,69,46,0.06)]"
                   >
-                    {item}
+                    <Icon
+                      size={17}
+                      strokeWidth={2}
+                      className="shrink-0 text-[color:var(--color-accent-deep)]"
+                    />
+                    <span>{item.label}</span>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
