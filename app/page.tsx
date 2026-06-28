@@ -1,8 +1,9 @@
 import Link from "next/link";
 import {
+  ArrowRight,
   Bed,
   Car,
-  CalendarCheck2,
+  CalendarDays,
   ClipboardList,
   Droplets,
   MessageCircle,
@@ -73,23 +74,23 @@ const whyChooseUsCards = [
 const bookingSteps = [
   {
     step: "Langkah 1",
-    title: "Semak kekosongan",
+    title: "Pilih unit & tarikh",
     description:
-      "Pilih tarikh dan semak kalendar untuk unit Nonamanis atau Serimuka.",
-    icon: CalendarCheck2,
+      "Tengok unit yang tersedia dan pilih tarikh menginap anda.",
+    icon: CalendarDays,
   },
   {
     step: "Langkah 2",
-    title: "Hantar permintaan",
+    title: "Isi borang tempahan",
     description:
-      "Isi borang tempahan dengan nama, tarikh, jumlah tetamu dan nota jika perlu.",
+      "Masukkan nama, tarikh, bilangan tetamu dan keperluan anda. Ambil masa seminit je.",
     icon: ClipboardList,
   },
   {
     step: "Langkah 3",
-    title: "Sahkan melalui WhatsApp",
+    title: "WhatsApp untuk confirm",
     description:
-      "Admin akan follow up untuk pengesahan slot dan maklumat deposit.",
+      "Selepas borang dihantar, kami akan hubungi anda melalui WhatsApp untuk pengesahan dan bayaran.",
     icon: MessageCircle,
   },
 ];
@@ -419,51 +420,44 @@ export default function HomePage() {
               Cara Tempah
             </p>
             <h2 className="text-3xl font-semibold text-stone-950">
-              Tempahan mudah dalam 3 langkah
+              Isi borang, kami uruskan yang lain
             </h2>
-            <p className="max-w-3xl text-base leading-8 text-stone-700">
-              Semak kekosongan, hantar permintaan tempahan, dan admin akan
-              bantu sahkan slot anda.
-            </p>
           </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {bookingSteps.map((step) => {
+          <div className="mt-8 grid gap-6 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-stretch">
+            {bookingSteps.map((step, index) => {
               const Icon = step.icon;
 
               return (
-              <div
-                key={step.title}
-                className="group flex h-full flex-col rounded-[2rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,69,46,0.12)]"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-accent)]/14 text-[color:var(--color-accent-deep)]">
-                  <Icon size={20} strokeWidth={2} />
+                <div key={step.title} className="contents">
+                  <div
+                    className="group flex h-full flex-col rounded-[2rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_55px_rgba(88,69,46,0.12)]"
+                  >
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-accent)]/14 text-[color:var(--color-accent-deep)]">
+                      <Icon size={20} strokeWidth={2} />
+                    </div>
+                    <p className="mt-5 text-xs font-semibold tracking-[0.18em] text-[color:var(--color-accent-deep)] uppercase">
+                      {step.step}
+                    </p>
+                    <h3 className="mt-3 text-xl font-semibold text-stone-950">
+                      {step.title}
+                    </h3>
+                    <p className="mt-3 flex-1 text-sm leading-7 text-stone-700">
+                      {step.description}
+                    </p>
+                  </div>
+                  {index < bookingSteps.length - 1 ? (
+                    <div
+                      aria-hidden="true"
+                      className="hidden items-center justify-center md:flex"
+                    >
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-stone-200 bg-white text-[color:var(--color-accent-deep)] shadow-[0_10px_24px_rgba(88,69,46,0.08)]">
+                        <ArrowRight size={18} strokeWidth={2} />
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
-                <p className="mt-5 text-xs font-semibold tracking-[0.18em] text-[color:var(--color-accent-deep)] uppercase">
-                  {step.step}
-                </p>
-                <h3 className="mt-3 text-xl font-semibold text-stone-950">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-stone-700">
-                  {step.description}
-                </p>
-              </div>
               );
             })}
-          </div>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/calendar"
-              className="inline-flex items-center justify-center rounded-full bg-stone-950 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-stone-800"
-            >
-              Semak Kekosongan
-            </Link>
-            <Link
-              href="/booking"
-              className="inline-flex items-center justify-center rounded-full border border-stone-300 bg-white px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:bg-stone-50"
-            >
-              Tempah Sekarang
-            </Link>
           </div>
         </section>
       </main>
