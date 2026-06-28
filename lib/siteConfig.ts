@@ -4,9 +4,9 @@ export const siteConfig = {
   adminName: "Pn Zarina",
   whatsappDisplay: "012-886 2408",
   whatsappNumber: "60128862408",
-  promoPrice: 200,
+  promoPrice: 195,
   normalPrice: 250,
-  deposit: 150,
+  deposit: 100,
   maxGuestsPerUnit: 10,
 } as const;
 

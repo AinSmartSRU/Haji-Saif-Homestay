@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import UnitCard from "@/components/UnitCard";
 import { type Unit } from "@/lib/site";
+import { unitImages } from "@/lib/imageConfig";
+import { siteConfig } from "@/lib/siteConfig";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 
 export default function UnitsPage() {
@@ -36,7 +38,14 @@ export default function UnitsPage() {
         return;
       }
 
-      setUnits((data ?? []) as Unit[]);
+      const loadedUnits = ((data ?? []) as Unit[]).map((unit) => ({
+        ...unit,
+        promo_price: unit.promo_price ?? siteConfig.promoPrice,
+        normal_price: unit.normal_price ?? siteConfig.normalPrice,
+        deposit: unit.deposit ?? siteConfig.deposit,
+      }));
+
+      setUnits(loadedUnits);
       setLoading(false);
     }
 
@@ -76,7 +85,13 @@ export default function UnitsPage() {
         ) : (
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {units.map((unit) => (
-              <UnitCard key={unit.id} unit={unit} />
+              <UnitCard
+                key={unit.id}
+                unit={unit}
+                heroImage={unitImages[unit.slug]?.[0]}
+                galleryImages={unitImages[unit.slug] ?? []}
+                showGallery
+              />
             ))}
           </div>
         )}

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import Navbar from "@/components/Navbar";
 import UnitCard from "@/components/UnitCard";
+import { homepageGalleryImages, unitImages } from "@/lib/imageConfig";
 import {
   bookingSteps,
   buildWhatsAppUrl,
@@ -14,10 +16,10 @@ import {
 import { siteConfig } from "@/lib/siteConfig";
 
 const quickInfo = [
-  "RM200/malam promo",
+  "RM195/malam promo",
   "3 bilik setiap rumah",
   "Maksimum 10 tetamu",
-  "Deposit RM150",
+  "Deposit RM100",
 ];
 
 const previewUnits = homepageUnits.map((unit) => ({
@@ -31,6 +33,18 @@ const previewUnits = homepageUnits.map((unit) => ({
   promo_price: siteConfig.promoPrice,
   deposit: siteConfig.deposit,
 }));
+
+const facilityHighlights = [
+  "3 bilik setiap rumah",
+  "Ruang tamu",
+  "Dapur",
+  "Ruang makan",
+  "Tandas",
+  "Kemudahan asas lengkap",
+  "Sesuai untuk keluarga",
+  "Parking",
+  "2 unit rumah bersebelahan",
+];
 
 export default function HomePage() {
   return (
@@ -119,12 +133,46 @@ export default function HomePage() {
 
           <div className="mt-8 grid gap-6 lg:grid-cols-2">
             {previewUnits.map((unit) => (
-              <UnitCard key={unit.id} unit={unit} />
+              <UnitCard
+                key={unit.id}
+                unit={unit}
+                heroImage={unitImages[unit.slug][0]}
+              />
             ))}
           </div>
         </section>
 
         <section className="border-y border-stone-200 bg-[color:var(--color-surface)]">
+          <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+            <div className="max-w-3xl space-y-4">
+              <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                Galeri Haji Saif Homestay
+              </p>
+              <h2 className="text-3xl font-semibold text-stone-950">
+                Lihat suasana rumah, ruang tamu, bilik, dapur dan kemudahan yang disediakan.
+              </h2>
+              <p className="text-lg leading-8 text-stone-700">
+                Lihat suasana rumah, ruang tamu, bilik, dapur dan kemudahan yang disediakan.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {homepageGalleryImages.map((image, index) => (
+                <ImageWithFallback
+                  key={image.src}
+                  src={image.src}
+                  alt={image.alt}
+                  label={image.label}
+                  priority={index < 2}
+                  aspectClassName={index === 0 ? "aspect-[16/12] md:col-span-2 md:row-span-2" : "aspect-[4/3]"}
+                  sizes={index === 0 ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[color:var(--color-surface)]">
           <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
             <div className="space-y-4">
               <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
@@ -144,6 +192,27 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="space-y-4">
+            <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+              Kemudahan Utama
+            </p>
+            <h2 className="text-3xl font-semibold text-stone-950">
+              Sesuai untuk keluarga dan kumpulan yang perlukan ruang praktikal
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {facilityHighlights.map((item) => (
+              <div
+                key={item}
+                className="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-5 text-sm font-medium text-stone-700 shadow-[0_18px_50px_rgba(88,69,46,0.06)]"
+              >
+                {item}
+              </div>
+            ))}
           </div>
         </section>
 
