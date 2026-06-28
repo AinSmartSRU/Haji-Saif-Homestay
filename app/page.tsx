@@ -9,7 +9,6 @@ import {
   buildWhatsAppUrl,
   homepageUnits,
   SITE_LOCATION,
-  SITE_NAME,
 } from "@/lib/site";
 import { siteConfig } from "@/lib/siteConfig";
 
@@ -100,20 +99,15 @@ export default function HomePage() {
           />
           <div className="relative mx-auto flex min-h-[80vh] w-full max-w-6xl items-center px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
             <div className="max-w-3xl space-y-8 text-white">
-              <div className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm">
-                Untuk keluarga dan rombongan kecil
-              </div>
               <div className="space-y-5">
-                <p className="text-sm font-semibold tracking-[0.24em] text-stone-200 uppercase">
-                  {SITE_NAME}
-                </p>
                 <h1 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-                  Lebih ruang untuk tinggal bersama
+                  Dua rumah. Satu kenangan.
                 </h1>
                 <p className="max-w-3xl text-lg leading-8 text-stone-100/90">
-                  Nikmati suasana rumah yang tenang di Putatan. Sesuai untuk
-                  keluarga besar, tetamu majlis, dan mereka yang mahu menginap
-                  lebih selesa daripada bilik hotel.
+                  Haji Saif Homestay Putatan menyediakan 2 unit rumah
+                  bersebelahan, khas untuk keluarga dan kumpulan yang nak
+                  berkumpul betul-betul, bukan sekadar tidur berdekatan. Lebih
+                  privasi. Lebih ruang. Lebih rasa macam rumah sendiri.
                 </p>
               </div>
               <div className="grid gap-3 text-sm text-stone-100 sm:grid-cols-2 lg:grid-cols-3">
