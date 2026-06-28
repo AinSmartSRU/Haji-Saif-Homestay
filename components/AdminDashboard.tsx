@@ -50,6 +50,104 @@ const initialBlockFormState: BlockFormState = {
   unit: "Nonamanis",
 };
 
+type BookingDisplayState = "pending" | "confirmed" | "cancelled" | "completed";
+
+type GroupedBookings = {
+  count: number;
+  items: BookingWithUnit[];
+  label: string;
+};
+
+function getTodayDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = `${now.getMonth() + 1}`.padStart(2, "0");
+  const day = `${now.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatMonthGroupLabel(dateString: string) {
+  const [year, month] = dateString.split("-").map(Number);
+
+  return new Intl.DateTimeFormat("ms-MY", {
+    month: "short",
+    year: "numeric",
+  }).format(new Date(year, month - 1, 1));
+}
+
+function getBookingDisplayState(
+  booking: BookingWithUnit,
+  todayString: string,
+): BookingDisplayState {
+  if (booking.status === "cancelled") {
+    return "cancelled";
+  }
+
+  if (
+    booking.status === "confirmed" &&
+    normalizeDateString(booking.check_out) < todayString
+  ) {
+    return "completed";
+  }
+
+  return booking.status;
+}
+
+function groupBookingsByMonth(
+  items: BookingWithUnit[],
+  newestFirst = false,
+): GroupedBookings[] {
+  const groups = new Map<string, BookingWithUnit[]>();
+
+  for (const item of items) {
+    const monthKey = item.check_in.slice(0, 7);
+    const current = groups.get(monthKey) ?? [];
+    current.push(item);
+    groups.set(monthKey, current);
+  }
+
+  const sortedKeys = [...groups.keys()].sort((left, right) =>
+    newestFirst ? right.localeCompare(left) : left.localeCompare(right),
+  );
+
+  return sortedKeys.map((key) => ({
+    count: groups.get(key)?.length ?? 0,
+    items: (groups.get(key) ?? []).sort((left, right) =>
+      newestFirst
+        ? right.check_in.localeCompare(left.check_in)
+        : left.check_in.localeCompare(right.check_in),
+    ),
+    label: formatMonthGroupLabel(`${key}-01`),
+  }));
+}
+
+function getStatusBadgeClasses(state: BookingDisplayState) {
+  switch (state) {
+    case "pending":
+      return "border-amber-200 bg-amber-50 text-amber-800";
+    case "confirmed":
+      return "border-emerald-200 bg-emerald-50 text-emerald-800";
+    case "cancelled":
+      return "border-red-200 bg-red-50 text-red-700";
+    case "completed":
+      return "border-stone-200 bg-stone-100 text-stone-700";
+  }
+}
+
+function getStatusLabel(state: BookingDisplayState) {
+  switch (state) {
+    case "pending":
+      return "Pending";
+    case "confirmed":
+      return "Confirmed";
+    case "cancelled":
+      return "Cancelled";
+    case "completed":
+      return "Selesai";
+  }
+}
+
 export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
   const router = useRouter();
   const [bookings, setBookings] = useState<BookingWithUnit[]>([]);
@@ -64,6 +162,7 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [blockError, setBlockError] = useState<string | null>(null);
   const [blockSuccess, setBlockSuccess] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -239,6 +338,23 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
 
     return matchesStatus && matchesUnit;
   });
+
+  const todayString = getTodayDateString();
+
+  const activeBookings = filteredBookings.filter((booking) => {
+    const displayState = getBookingDisplayState(booking, todayString);
+
+    return displayState === "pending" || displayState === "confirmed";
+  });
+
+  const historyBookings = filteredBookings.filter((booking) => {
+    const displayState = getBookingDisplayState(booking, todayString);
+
+    return displayState === "cancelled" || displayState === "completed";
+  });
+
+  const activeGroups = groupBookingsByMonth(activeBookings);
+  const historyGroups = groupBookingsByMonth(historyBookings, true);
 
   function createGuestWhatsAppLink(booking: BookingWithUnit) {
     const normalizedPhone = normalizeMalaysianWhatsAppNumber(booking.phone);
@@ -533,134 +649,285 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
         <div className="mt-8 rounded-[2rem] border border-red-200 bg-red-50 px-6 py-10 text-sm text-red-700">
           {error}
         </div>
-      ) : filteredBookings.length === 0 ? (
-        <div className="mt-8 rounded-[2rem] border border-dashed border-stone-300 px-6 py-10 text-sm text-stone-600">
-          Tiada tempahan ditemui untuk tapisan semasa.
-        </div>
       ) : (
-        <div className="mt-8 grid gap-5">
-          {filteredBookings.map((booking) => (
-            <article
-              key={booking.id}
-              className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)]"
-            >
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="grid flex-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Tetamu
-                    </p>
-                    <p className="mt-2 font-semibold text-stone-900">
-                      {booking.guest_name}
-                    </p>
-                    <p className="mt-1 text-sm text-stone-600">{booking.phone}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Unit
-                    </p>
-                    <p className="mt-2 font-semibold text-stone-900">
-                      {booking.units?.name ?? "Tidak diketahui"}
-                    </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-stone-600">
-                      <span>{booking.guests} tetamu</span>
-                      {booking.guests > siteConfig.maxGuestsPerUnit ? (
-                        <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
-                          Lebih had
-                        </span>
-                      ) : null}
+        <section className="mt-8 space-y-8">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold text-stone-950">
+                Tempahan Aktif
+              </h2>
+              <p className="text-sm text-stone-600">
+                Tempahan pending dan confirmed yang masih aktif akan dipaparkan
+                di sini.
+              </p>
+            </div>
+
+            {activeGroups.length === 0 ? (
+              <div className="rounded-[1.5rem] border border-dashed border-stone-300 px-5 py-6 text-sm text-stone-600">
+                Tiada tempahan aktif buat masa ini.
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {activeGroups.map((group) => (
+                  <div key={group.label} className="space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-semibold text-stone-900">
+                        {group.label}
+                      </h3>
+                      <span className="text-sm text-stone-500">
+                        {group.count} tempahan
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
+                      {group.items.map((booking) => {
+                        const displayState = getBookingDisplayState(
+                          booking,
+                          todayString,
+                        );
+                        const whatsappLink = createGuestWhatsAppLink(booking);
+
+                        return (
+                          <article
+                            key={booking.id}
+                            className="rounded-[1.35rem] border border-stone-200 bg-white p-4 shadow-[0_10px_28px_rgba(88,69,46,0.06)] sm:p-5"
+                          >
+                            <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,1fr)_auto] lg:items-center">
+                              <div className="min-w-0 space-y-2">
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="min-w-0">
+                                    <p className="truncate text-base font-semibold text-stone-950">
+                                      {booking.guest_name}
+                                    </p>
+                                    <p className="mt-1 text-sm text-stone-600">
+                                      {booking.phone}
+                                    </p>
+                                  </div>
+                                  <span
+                                    className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getStatusBadgeClasses(displayState)}`}
+                                  >
+                                    {getStatusLabel(displayState)}
+                                  </span>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-600">
+                                  <span className="font-medium text-stone-800">
+                                    {booking.units?.name ?? "Tidak diketahui"}
+                                  </span>
+                                  <span>{booking.guests} tetamu</span>
+                                  {booking.guests > siteConfig.maxGuestsPerUnit ? (
+                                    <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                                      Lebih had
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+
+                              <div className="text-sm text-stone-700">
+                                <p className="font-medium">
+                                  {formatDate(booking.check_in)} {"\u2192"}{" "}
+                                  {formatDate(booking.check_out)}
+                                </p>
+                              </div>
+
+                              <div className="min-w-0 text-sm text-stone-600">
+                                {booking.notes ? (
+                                  <p className="line-clamp-2 leading-6">
+                                    {booking.notes}
+                                  </p>
+                                ) : (
+                                  <p className="text-stone-400">
+                                    Tiada nota tambahan.
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap gap-2 lg:justify-end">
+                                {whatsappLink ? (
+                                  <a
+                                    href={whatsappLink}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="rounded-full border border-[color:var(--color-accent)] bg-[color:var(--color-accent)]/12 px-3 py-2 text-sm font-semibold text-[color:var(--color-accent-deep)] transition hover:bg-[color:var(--color-accent)]/20"
+                                  >
+                                    WhatsApp
+                                  </a>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    disabled
+                                    className="rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm font-semibold text-stone-400"
+                                  >
+                                    WhatsApp
+                                  </button>
+                                )}
+
+                                {displayState === "pending" ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      disabled={isPending}
+                                      onClick={() => updateStatus(booking.id, "confirmed")}
+                                      className="rounded-full bg-emerald-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+                                    >
+                                      Confirm
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={isPending}
+                                      onClick={() => updateStatus(booking.id, "cancelled")}
+                                      className="rounded-full bg-red-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </>
+                                ) : displayState === "confirmed" ? (
+                                  <button
+                                    type="button"
+                                    disabled={isPending}
+                                    onClick={() => updateStatus(booking.id, "cancelled")}
+                                    className="rounded-full bg-red-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+                                  >
+                                    Cancel
+                                  </button>
+                                ) : null}
+                              </div>
+                            </div>
+                          </article>
+                        );
+                      })}
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Status
-                    </p>
-                    <p className="mt-2 font-semibold capitalize text-stone-900">
-                      {booking.status}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Check-in
-                    </p>
-                    <p className="mt-2 text-sm text-stone-700">
-                      {formatDate(booking.check_in)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Check-out
-                    </p>
-                    <p className="mt-2 text-sm text-stone-700">
-                      {formatDate(booking.check_out)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Dicipta
-                    </p>
-                    <p className="mt-2 text-sm text-stone-700">
-                      {formatDate(booking.created_at)}
-                    </p>
-                  </div>
-                  <div className="sm:col-span-2 xl:col-span-3">
-                    <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
-                      Nota
-                    </p>
-                    <p className="mt-2 text-sm leading-7 text-stone-700">
-                      {booking.notes || "Tiada nota tambahan."}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-3 lg:w-52">
-                  {createGuestWhatsAppLink(booking) ? (
-                    <a
-                      href={createGuestWhatsAppLink(booking) ?? undefined}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="rounded-full border border-[color:var(--color-accent)] bg-[color:var(--color-accent)]/12 px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--color-accent-deep)] transition hover:bg-[color:var(--color-accent)]/20"
-                    >
-                      WhatsApp Guest
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled
-                      className="rounded-full border border-stone-200 bg-stone-100 px-4 py-2.5 text-sm font-semibold text-stone-400"
-                    >
-                      WhatsApp Guest
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => updateStatus(booking.id, "confirmed")}
-                    className="rounded-full bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-stone-400"
-                  >
-                    Mark Confirmed
-                  </button>
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => updateStatus(booking.id, "cancelled")}
-                    className="rounded-full bg-red-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:bg-stone-400"
-                  >
-                    Mark Cancelled
-                  </button>
-                  <button
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => updateStatus(booking.id, "pending")}
-                    className="rounded-full border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-900 transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:text-stone-400"
-                  >
-                    Mark Pending
-                  </button>
-                </div>
+                ))}
               </div>
-            </article>
-          ))}
-        </div>
+            )}
+          </div>
+
+          <div className="rounded-[1.75rem] border border-stone-200 bg-white p-5 shadow-[0_14px_40px_rgba(88,69,46,0.05)] sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold text-stone-950">
+                  History Tempahan
+                </h2>
+                <p className="text-sm text-stone-600">
+                  Tempahan yang sudah selesai, cancelled, atau rejected disimpan
+                  di sini.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowHistory((current) => !current)}
+                className="inline-flex rounded-full border border-stone-300 bg-stone-50 px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100"
+              >
+                {showHistory ? "Sembunyikan History" : "Lihat History"}
+              </button>
+            </div>
+
+            {showHistory ? (
+              historyGroups.length === 0 ? (
+                <div className="mt-5 rounded-[1.5rem] border border-dashed border-stone-300 px-5 py-6 text-sm text-stone-600">
+                  Belum ada history tempahan.
+                </div>
+              ) : (
+                <div className="mt-6 space-y-6">
+                  {historyGroups.map((group) => (
+                    <div key={`history-${group.label}`} className="space-y-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-lg font-semibold text-stone-900">
+                          {group.label}
+                        </h3>
+                        <span className="text-sm text-stone-500">
+                          {group.count} tempahan
+                        </span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {group.items.map((booking) => {
+                          const displayState = getBookingDisplayState(
+                            booking,
+                            todayString,
+                          );
+                          const whatsappLink = createGuestWhatsAppLink(booking);
+
+                          return (
+                            <article
+                              key={`history-${booking.id}`}
+                              className="rounded-[1.25rem] border border-stone-200 bg-stone-50/80 p-4 sm:p-5"
+                            >
+                              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)_minmax(0,1fr)_auto] lg:items-center">
+                                <div className="min-w-0 space-y-2">
+                                  <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                      <p className="truncate text-base font-semibold text-stone-900">
+                                        {booking.guest_name}
+                                      </p>
+                                      <p className="mt-1 text-sm text-stone-600">
+                                        {booking.phone}
+                                      </p>
+                                    </div>
+                                    <span
+                                      className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${getStatusBadgeClasses(displayState)}`}
+                                    >
+                                      {getStatusLabel(displayState)}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-600">
+                                    <span className="font-medium text-stone-800">
+                                      {booking.units?.name ?? "Tidak diketahui"}
+                                    </span>
+                                    <span>{booking.guests} tetamu</span>
+                                  </div>
+                                </div>
+
+                                <div className="text-sm text-stone-700">
+                                  <p className="font-medium">
+                                    {formatDate(booking.check_in)} {"\u2192"}{" "}
+                                    {formatDate(booking.check_out)}
+                                  </p>
+                                </div>
+
+                                <div className="min-w-0 text-sm text-stone-500">
+                                  {booking.notes ? (
+                                    <p className="line-clamp-2 leading-6">
+                                      {booking.notes}
+                                    </p>
+                                  ) : (
+                                    <p>Tiada nota tambahan.</p>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-wrap gap-2 lg:justify-end">
+                                  {whatsappLink ? (
+                                    <a
+                                      href={whatsappLink}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="rounded-full border border-[color:var(--color-accent)] bg-[color:var(--color-accent)]/12 px-3 py-2 text-sm font-semibold text-[color:var(--color-accent-deep)] transition hover:bg-[color:var(--color-accent)]/20"
+                                    >
+                                      WhatsApp
+                                    </a>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      disabled
+                                      className="rounded-full border border-stone-200 bg-stone-100 px-3 py-2 text-sm font-semibold text-stone-400"
+                                    >
+                                      WhatsApp
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : null}
+          </div>
+        </section>
       )}
     </>
   );
