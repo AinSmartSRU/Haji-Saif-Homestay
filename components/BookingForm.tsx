@@ -215,13 +215,11 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
             Permintaan tempahan diterima
           </p>
           <p className="mt-3 max-w-2xl leading-7 text-stone-700">
-            Terima kasih. Permintaan tempahan anda telah dihantar kepada pihak
-            Haji Saif Homestay. Tempahan hanya disahkan selepas slot disemak
-            dan deposit diterima.
+            Permintaan tempahan anda telah diterima. Admin akan semak slot dan
+            hubungi anda melalui WhatsApp.
           </p>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-stone-600">
-            Permintaan anda telah diterima. Slot hanya dikunci selepas
-            tempahan disahkan oleh admin.
+            Tempahan hanya disahkan selepas slot disemak dan deposit diterima.
           </p>
           <div className="mt-6 grid gap-4 rounded-[1.5rem] border border-emerald-100 bg-white/90 p-5 sm:grid-cols-2">
             <div>

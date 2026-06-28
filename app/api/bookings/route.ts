@@ -161,7 +161,7 @@ export async function POST(request: Request) {
     );
   }
 
-  void sendBookingNotification({
+  await sendBookingNotification({
     createdAt:
       (insertedBooking as { created_at?: string } | null)?.created_at ??
       new Date().toISOString(),

@@ -21,7 +21,7 @@ export async function sendBookingNotification(
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
-    console.error("RESEND_API_KEY is not configured.");
+    console.error("[booking-email] RESEND_API_KEY is not configured.");
     return { ok: false as const, skipped: true as const };
   }
 
@@ -30,6 +30,12 @@ export async function sendBookingNotification(
     process.env.BOOKING_NOTIFICATION_EMAIL ||
     siteConfig.bookingNotificationEmail;
   const adminUrl = process.env.ADMIN_DASHBOARD_URL;
+  const logContext = {
+    to,
+    unit: payload.unitName,
+    check_in: payload.checkIn,
+    check_out: payload.checkOut,
+  };
 
   const html = `
     <div style="font-family: Arial, Helvetica, sans-serif; color: #2f2419; line-height: 1.6;">
@@ -58,16 +64,20 @@ export async function sendBookingNotification(
   `;
 
   try {
-    await resend.emails.send({
+    console.log("[booking-email] sending notification", logContext);
+
+    const data = await resend.emails.send({
       from: "Haji Saif Homestay <onboarding@resend.dev>",
       to,
       subject: "Tempahan Baru Haji Saif Homestay",
       html,
     });
 
+    console.log("[booking-email] sent", data);
+
     return { ok: true as const };
   } catch (error) {
-    console.error("Failed to send booking notification email:", error);
+    console.error("[booking-email] failed", error);
     return { ok: false as const, skipped: false as const };
   }
 }
