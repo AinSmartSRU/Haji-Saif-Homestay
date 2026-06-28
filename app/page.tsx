@@ -24,49 +24,15 @@ const previewUnits = homepageUnits.map((unit) => ({
   deposit: siteConfig.deposit,
 }));
 
-const facilityHighlights = [
-  "3 bilik setiap rumah",
-  "Ruang tamu",
-  "Dapur",
-  "Ruang makan",
-  "Tandas",
-  "Kemudahan asas lengkap",
-  "Sesuai untuk keluarga",
-  "Parking",
-  "2 unit rumah bersebelahan",
-];
-
-const featureCards = [
-  {
-    title: "2 unit bersebelahan",
-    description:
-      "Sesuai untuk keluarga besar atau kumpulan kecil yang mahu tinggal dekat dalam satu kawasan.",
-  },
-  {
-    title: "3 bilik setiap rumah",
-    description:
-      "Ruang tidur lebih selesa untuk keluarga, anak-anak dan tetamu.",
-  },
-  {
-    title: "Maksimum 10 tetamu/unit",
-    description:
-      "Sesuai untuk percutian keluarga, urusan majlis dan tetamu dari luar kawasan.",
-  },
-  {
-    title: "Ruang tamu & dapur",
-    description:
-      "Mudah untuk berkumpul, makan bersama dan berehat seperti di rumah sendiri.",
-  },
-  {
-    title: "Deposit RM100",
-    description:
-      "Tempahan lebih mudah dengan deposit rendah selepas slot disahkan.",
-  },
-  {
-    title: "Lokasi Putatan",
-    description:
-      "Mudah diakses untuk keluarga, pelancong dan urusan sekitar Putatan.",
-  },
+const facilityChips = [
+  "WiFi laju",
+  "Aircond",
+  "Dapur lengkap",
+  "Mesin basuh",
+  "Parking percuma",
+  "Smart TV",
+  "Tilam berkualiti",
+  "Air panas",
 ];
 
 const whyChooseUsCards = [
@@ -268,6 +234,38 @@ export default function HomePage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="rounded-[2.25rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#f5ecdf)] px-6 py-10 shadow-[0_22px_60px_rgba(88,69,46,0.08)] sm:px-8 lg:px-10">
+            <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+              <div className="space-y-5">
+                <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+                  Kemudahan / Fasiliti
+                </p>
+                <h2 className="max-w-xl text-3xl font-semibold tracking-tight text-stone-950 sm:text-4xl">
+                  Semua yang keluarga perlukan, dah ada
+                </h2>
+                <p className="max-w-xl text-base leading-8 text-stone-700">
+                  Kami faham apa yang penting bila datang ramai-ramai. Sebab
+                  itu setiap unit disediakan dengan kemudahan asas yang
+                  membantu keluarga berehat, berkumpul dan bermalam dengan
+                  lebih selesa.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {facilityChips.map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-full border border-[color:var(--color-accent)]/25 bg-white/88 px-4 py-3 text-sm font-semibold text-stone-800 shadow-[0_10px_25px_rgba(88,69,46,0.06)]"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
@@ -323,77 +321,6 @@ export default function HomePage() {
                 />
               ))}
             </div>
-          </div>
-        </section>
-
-        <section className="bg-[color:var(--color-surface)]">
-          <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-            <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-              <div className="space-y-5">
-                <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
-                  Kemudahan
-                </p>
-                <h2 className="max-w-xl text-3xl font-semibold text-stone-950 sm:text-4xl">
-                  Sesuai untuk keluarga yang mahu menginap bersama
-                </h2>
-                <p className="max-w-xl text-lg leading-8 text-stone-700">
-                  Lebih ruang untuk berkumpul, berehat dan bermalam bersama
-                  keluarga berbanding tinggal berasingan di bilik hotel.
-                </p>
-                <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-[0_18px_50px_rgba(88,69,46,0.08)]">
-                  <ImageWithFallback
-                    src="/serimuka-ruangtamu-1.webp"
-                    alt="Ruang tamu unit Serimuka di Haji Saif Homestay Putatan"
-                    aspectClassName="aspect-[16/11]"
-                    sizes="(min-width: 1024px) 40vw, 100vw"
-                    className="rounded-none shadow-none"
-                    imageClassName="object-cover object-center"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {featureCards.map((feature, index) => (
-                  <article
-                    key={feature.title}
-                    className="group flex h-full flex-col rounded-[1.75rem] border border-stone-200 bg-[linear-gradient(180deg,_#fffdf8,_#fbf5eb)] p-6 shadow-[0_14px_40px_rgba(88,69,46,0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-md"
-                  >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[color:var(--color-accent)]/14 text-sm font-semibold text-[color:var(--color-accent-deep)]">
-                      0{index + 1}
-                    </div>
-                    <div className="mt-5 flex flex-1 flex-col gap-3">
-                      <h3 className="text-lg font-semibold text-stone-950">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm leading-7 text-stone-700">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="space-y-4">
-            <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
-              Kemudahan Utama
-            </p>
-            <h2 className="text-3xl font-semibold text-stone-950">
-              Sesuai untuk keluarga dan kumpulan yang perlukan ruang praktikal
-            </h2>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {facilityHighlights.map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.5rem] border border-stone-200 bg-white px-5 py-5 text-sm font-medium text-stone-700 shadow-[0_18px_50px_rgba(88,69,46,0.06)]"
-              >
-                {item}
-              </div>
-            ))}
           </div>
         </section>
 
