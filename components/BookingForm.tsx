@@ -246,6 +246,10 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
             Haji Saif Homestay. Tempahan hanya disahkan selepas slot disemak
             dan deposit diterima.
           </p>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-stone-600">
+            Permintaan anda telah diterima. Slot hanya dikunci selepas
+            tempahan disahkan oleh admin.
+          </p>
           <div className="mt-6 grid gap-4 rounded-[1.5rem] border border-emerald-100 bg-white/90 p-5 sm:grid-cols-2">
             <div>
               <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Nama</p>

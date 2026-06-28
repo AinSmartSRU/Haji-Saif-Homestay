@@ -20,9 +20,11 @@ export default function CalendarPage() {
         </div>
 
         <div className="mt-8 rounded-[2rem] border border-[color:var(--color-accent)]/30 bg-[color:var(--color-accent)]/10 p-5 text-sm leading-7 text-stone-700">
-          Nota: Tarikh checkout tidak dikira sebagai malam yang ditempah.
-          Contohnya, tempahan 27/6 hingga 29/6 bermaksud malam 27/6 dan 28/6
-          sahaja ditempah. Tarikh 29/6 masih boleh dipilih untuk check-in baharu.
+          Nota: Kalendar hanya menunjukkan tempahan yang telah disahkan.
+          Permintaan yang masih pending belum mengunci tarikh. Tarikh checkout
+          tidak dikira sebagai malam ditempah. Contoh: tempahan 27 hingga 29
+          Jun bermaksud malam 27 dan 28 Jun sahaja ditempah. 29 Jun masih boleh
+          dipilih untuk check-in baharu.
         </div>
 
         <div className="mt-8">
