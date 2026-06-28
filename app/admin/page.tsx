@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -132,6 +133,12 @@ export default function AdminPage() {
           <h1 className="text-4xl font-semibold tracking-tight text-stone-950">
             Dashboard ringkas untuk semak dan kemas kini booking
           </h1>
+          <Link
+            href="/calendar"
+            className="inline-flex rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-50"
+          >
+            Kalendar Tempahan
+          </Link>
         </div>
 
         <div className="mt-8 grid gap-4 rounded-[2rem] border border-stone-200 bg-white p-5 shadow-[0_18px_60px_rgba(88,69,46,0.08)] md:grid-cols-2">

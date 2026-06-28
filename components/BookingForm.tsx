@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   buildWhatsAppUrl,
@@ -7,6 +8,7 @@ import {
   type Unit,
   type BookingStatus,
 } from "@/lib/site";
+import { normalizeDateString, rangesOverlap } from "@/lib/bookingDates";
 import { siteConfig } from "@/lib/siteConfig";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 
@@ -42,6 +44,11 @@ type SuccessState = {
   checkOut: string;
   guests: string;
   notes: string;
+};
+
+type ConfirmedBooking = {
+  check_in: string;
+  check_out: string;
 };
 
 export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
@@ -113,7 +120,9 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
       return;
     }
 
-    if (new Date(form.check_out) <= new Date(form.check_in)) {
+    if (
+      normalizeDateString(form.check_out) <= normalizeDateString(form.check_in)
+    ) {
       setError("Tarikh check-out mesti selepas tarikh check-in.");
       return;
     }
@@ -139,6 +148,36 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
     setSubmitting(true);
 
     const status: BookingStatus = "pending";
+
+    const { data: confirmedBookings, error: conflictError } = await supabase
+      .from("bookings")
+      .select("check_in, check_out")
+      .eq("unit_id", form.unit_id)
+      .eq("status", "confirmed");
+
+    if (conflictError) {
+      setSubmitting(false);
+      setError("Semakan tarikh tidak berjaya. Sila cuba lagi.");
+      return;
+    }
+
+    const overlapsConfirmed = ((confirmedBookings ?? []) as ConfirmedBooking[]).some(
+      (booking) =>
+        rangesOverlap(
+          booking.check_in,
+          booking.check_out,
+          form.check_in,
+          form.check_out,
+        ),
+    );
+
+    if (overlapsConfirmed) {
+      setSubmitting(false);
+      setError(
+        "Tarikh ini sudah ditempah untuk unit yang dipilih. Sila pilih tarikh lain.",
+      );
+      return;
+    }
 
     const { error: insertError } = await supabase.from("bookings").insert({
       unit_id: form.unit_id,
@@ -323,16 +362,29 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
                 required
               />
             </label>
-            <label className="space-y-2 text-sm font-medium text-stone-700">
-              Check-out
-              <input
+          <label className="space-y-2 text-sm font-medium text-stone-700">
+            Check-out
+            <input
                 type="date"
                 value={form.check_out}
                 onChange={(event) => updateField("check_out", event.target.value)}
                 className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                required
-              />
-            </label>
+              required
+            />
+          </label>
+          </div>
+
+          <div className="flex flex-col gap-2 text-sm text-stone-600">
+            <Link
+              href="/calendar"
+              className="font-semibold text-[color:var(--color-accent-deep)] transition hover:text-stone-950"
+            >
+              Semak kalendar tempahan
+            </Link>
+            <p>
+              Permintaan berstatus pending mungkin masih dalam semakan, tetapi
+              hanya tempahan confirmed akan menghalang pilihan tarikh anda.
+            </p>
           </div>
 
           <label className="block space-y-2 text-sm font-medium text-stone-700">

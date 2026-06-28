@@ -2,6 +2,7 @@ import BookingForm from "@/components/BookingForm";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { siteConfig } from "@/lib/siteConfig";
+import Link from "next/link";
 
 type BookingPageProps = {
   searchParams: Promise<{
@@ -39,6 +40,12 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
               <p>
                 Setiap unit mempunyai 3 bilik dan muat sehingga {siteConfig.maxGuestsPerUnit} tetamu.
               </p>
+              <Link
+                href="/calendar"
+                className="inline-flex text-sm font-semibold text-[color:var(--color-accent-deep)] transition hover:text-stone-950"
+              >
+                Semak kalendar tempahan
+              </Link>
             </div>
           </section>
 

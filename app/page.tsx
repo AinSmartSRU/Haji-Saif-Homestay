@@ -73,6 +73,12 @@ export default function HomePage() {
                 >
                   Semak & Tempah
                 </Link>
+                <Link
+                  href="/calendar"
+                  className="inline-flex items-center justify-center rounded-full border border-stone-300 bg-[color:var(--color-surface)] px-6 py-3.5 text-sm font-semibold text-stone-900 transition hover:border-stone-400 hover:bg-stone-50"
+                >
+                  Semak Kalendar
+                </Link>
                 <a
                   href={buildWhatsAppUrl(
                     `Hi ${siteConfig.adminName}, saya berminat untuk bertanya tentang ${siteConfig.siteName}.`,
