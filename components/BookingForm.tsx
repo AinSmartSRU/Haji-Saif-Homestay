@@ -1,0 +1,308 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  buildWhatsAppUrl,
+  type Unit,
+  type BookingStatus,
+} from "@/lib/site";
+import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
+
+type BookingFormProps = {
+  initialUnitSlug?: string | null;
+};
+
+type FormState = {
+  guest_name: string;
+  phone: string;
+  unit_id: string;
+  check_in: string;
+  check_out: string;
+  guests: string;
+  notes: string;
+};
+
+const initialFormState: FormState = {
+  guest_name: "",
+  phone: "",
+  unit_id: "",
+  check_in: "",
+  check_out: "",
+  guests: "1",
+  notes: "",
+};
+
+type SuccessState = {
+  guestName: string;
+  unitName: string;
+  checkIn: string;
+  checkOut: string;
+  guests: string;
+};
+
+export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [form, setForm] = useState<FormState>(initialFormState);
+  const [loadingUnits, setLoadingUnits] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<SuccessState | null>(null);
+
+  useEffect(() => {
+    async function loadUnits() {
+      if (!isSupabaseConfigured) {
+        setError(
+          "Konfigurasi Supabase belum lengkap. Sila tetapkan NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY.",
+        );
+        setLoadingUnits(false);
+        return;
+      }
+
+      const { data, error: unitsError } = await supabase
+        .from("units")
+        .select(
+          "id, name, slug, description, bedrooms, max_guests, normal_price, promo_price, deposit, is_active",
+        )
+        .eq("is_active", true)
+        .order("name");
+
+      if (unitsError) {
+        setError("Unit tidak dapat dimuatkan sekarang. Sila cuba lagi.");
+        setLoadingUnits(false);
+        return;
+      }
+
+      const loadedUnits = (data ?? []) as Unit[];
+      setUnits(loadedUnits);
+
+      setForm((current) => {
+        const preferredUnit = loadedUnits.find(
+          (unit) => unit.slug === initialUnitSlug,
+        );
+
+        return {
+          ...current,
+          unit_id: preferredUnit?.id ?? loadedUnits[0]?.id ?? "",
+        };
+      });
+
+      setLoadingUnits(false);
+    }
+
+    void loadUnits();
+  }, [initialUnitSlug]);
+
+  function updateField<K extends keyof FormState>(field: K, value: FormState[K]) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    if (!form.guest_name || !form.phone || !form.unit_id || !form.check_in || !form.check_out) {
+      setError("Sila lengkapkan semua maklumat wajib sebelum menghantar tempahan.");
+      return;
+    }
+
+    if (new Date(form.check_out) <= new Date(form.check_in)) {
+      setError("Tarikh check-out mesti selepas tarikh check-in.");
+      return;
+    }
+
+    const guestCount = Number(form.guests);
+
+    if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 10) {
+      setError("Jumlah tetamu mestilah antara 1 hingga 10 orang.");
+      return;
+    }
+
+    if (!isSupabaseConfigured) {
+      setError(
+        "Konfigurasi Supabase belum lengkap. Sila tetapkan pemboleh ubah persekitaran terlebih dahulu.",
+      );
+      return;
+    }
+
+    setSubmitting(true);
+
+    const status: BookingStatus = "pending";
+
+    const { error: insertError } = await supabase.from("bookings").insert({
+      unit_id: form.unit_id,
+      guest_name: form.guest_name,
+      phone: form.phone,
+      check_in: form.check_in,
+      check_out: form.check_out,
+      guests: guestCount,
+      notes: form.notes || null,
+      status,
+    });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      setError("Permintaan tempahan tidak berjaya dihantar. Sila cuba lagi.");
+      return;
+    }
+
+    const selectedUnit = units.find((unit) => unit.id === form.unit_id);
+
+    setSuccess({
+      guestName: form.guest_name,
+      unitName: selectedUnit?.name ?? "Unit pilihan",
+      checkIn: form.check_in,
+      checkOut: form.check_out,
+      guests: form.guests,
+    });
+    setForm((current) => ({
+      ...initialFormState,
+      unit_id: current.unit_id,
+    }));
+  }
+
+  const whatsappMessage = success
+    ? `Hi, saya berminat booking Haji Saif Homestay. Nama: ${success.guestName}, Unit: ${success.unitName}, Check-in: ${success.checkIn}, Check-out: ${success.checkOut}, Tetamu: ${success.guests}`
+    : "";
+
+  return (
+    <div className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-8">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold text-stone-900">
+          Borang Permintaan Tempahan
+        </h2>
+        <p className="text-sm leading-7 text-stone-600">
+          Isi maklumat anda untuk semakan tempahan. Kami akan menghubungi anda
+          semula untuk pengesahan.
+        </p>
+      </div>
+
+      {error ? (
+        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : null}
+
+      {success ? (
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-800">
+          <p className="font-semibold">Permintaan tempahan berjaya dihantar.</p>
+          <p className="mt-1">
+            Sila teruskan ke WhatsApp untuk memudahkan pengesahan tempahan anda.
+          </p>
+          <a
+            href={buildWhatsAppUrl(whatsappMessage)}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 inline-flex rounded-full bg-emerald-700 px-4 py-2 font-semibold text-white transition hover:bg-emerald-800"
+          >
+            Buka WhatsApp
+          </a>
+        </div>
+      ) : null}
+
+      {loadingUnits ? (
+        <div className="mt-8 rounded-2xl bg-stone-50 px-4 py-6 text-sm text-stone-600">
+          Sedang memuatkan pilihan unit...
+        </div>
+      ) : units.length === 0 ? (
+        <div className="mt-8 rounded-2xl border border-dashed border-stone-300 px-4 py-6 text-sm text-stone-600">
+          Tiada unit aktif tersedia buat masa ini.
+        </div>
+      ) : (
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <div className="grid gap-5 md:grid-cols-2">
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Nama Tetamu
+              <input
+                value={form.guest_name}
+                onChange={(event) => updateField("guest_name", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                placeholder="Nama penuh"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Nombor Telefon
+              <input
+                value={form.phone}
+                onChange={(event) => updateField("phone", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                placeholder="Contoh: 60123456789"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Pilih Unit
+              <select
+                value={form.unit_id}
+                onChange={(event) => updateField("unit_id", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              >
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Jumlah Tetamu
+              <input
+                type="number"
+                min={1}
+                max={10}
+                value={form.guests}
+                onChange={(event) => updateField("guests", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Check-in
+              <input
+                type="date"
+                value={form.check_in}
+                onChange={(event) => updateField("check_in", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Check-out
+              <input
+                type="date"
+                value={form.check_out}
+                onChange={(event) => updateField("check_out", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              />
+            </label>
+          </div>
+
+          <label className="block space-y-2 text-sm font-medium text-stone-700">
+            Nota Tambahan
+            <textarea
+              value={form.notes}
+              onChange={(event) => updateField("notes", event.target.value)}
+              className="min-h-32 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+              placeholder="Contoh: waktu tiba, keperluan keluarga, atau pertanyaan lain"
+            />
+          </label>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+          >
+            {submitting ? "Menghantar..." : "Hantar Permintaan Tempahan"}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
