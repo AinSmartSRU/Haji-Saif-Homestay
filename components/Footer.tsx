@@ -40,10 +40,10 @@ export default function Footer() {
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+        <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <Link
             href="/booking"
-            className="rounded-full bg-[color:var(--color-accent)] px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-[color:var(--color-accent-strong)]"
+            className="rounded-full bg-[color:var(--color-accent)] px-5 py-3 text-center text-sm font-semibold text-stone-950 transition hover:bg-[color:var(--color-accent-strong)]"
           >
             Semak & Tempah
           </Link>
@@ -53,7 +53,7 @@ export default function Footer() {
             )}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-100 transition hover:border-stone-500 hover:bg-stone-900"
+            className="rounded-full border border-stone-700 px-5 py-3 text-center text-sm font-semibold text-stone-100 transition hover:border-stone-500 hover:bg-stone-900"
           >
             WhatsApp Kami
           </a>

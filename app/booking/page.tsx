@@ -18,26 +18,26 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="space-y-8">
-          <section className="overflow-hidden rounded-[2.25rem] border border-stone-800/55 bg-[linear-gradient(135deg,_#3b2d22,_#201914)] px-6 py-8 text-stone-100 shadow-[0_24px_80px_rgba(48,33,18,0.22)] sm:px-8 lg:px-10 lg:py-10">
+          <section className="overflow-hidden rounded-[2rem] border border-stone-800/55 bg-[linear-gradient(135deg,_#3b2d22,_#201914)] px-5 py-7 text-stone-100 shadow-[0_24px_80px_rgba(48,33,18,0.22)] sm:rounded-[2.25rem] sm:px-8 sm:py-8 lg:px-10 lg:py-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-start">
               <div className="space-y-5">
-                <p className="text-sm font-semibold tracking-[0.24em] text-[color:var(--color-accent)] uppercase">
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-[color:var(--color-accent)] uppercase sm:text-sm sm:tracking-[0.24em]">
                   Tempahan
                 </p>
-                <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-5xl">
                   Selamatkan tarikh anda sebelum orang lain ambil
                 </h1>
-                <p className="max-w-2xl text-base leading-8 text-stone-200">
+                <p className="max-w-2xl text-sm leading-7 text-stone-200 sm:text-base sm:leading-8">
                   Hanya dua unit je, dan tarikh cuti sekolah selalu cepat
                   penuh. Isi borang di bawah, kami WhatsApp anda untuk sahkan
                   tempahan.
                 </p>
               </div>
 
-              <div className="rounded-[1.75rem] border border-white/10 bg-white/8 p-5 shadow-[0_16px_40px_rgba(12,9,7,0.18)] backdrop-blur-sm">
-                <p className="text-sm font-semibold tracking-[0.2em] text-stone-300 uppercase">
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/8 p-4 shadow-[0_16px_40px_rgba(12,9,7,0.18)] backdrop-blur-sm sm:rounded-[1.75rem] sm:p-5">
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-stone-300 uppercase sm:text-sm sm:tracking-[0.2em]">
                   Ringkasan tempahan
                 </p>
                 <div className="mt-4 divide-y divide-white/10 text-sm">

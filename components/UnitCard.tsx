@@ -26,9 +26,9 @@ export default function UnitCard({
   const resolvedDeposit = unit.deposit ?? siteConfig.deposit;
 
   return (
-    <article className="flex h-full flex-col rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)]">
+    <article className="flex h-full flex-col rounded-[1.75rem] border border-stone-200 bg-white p-4 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:rounded-[2rem] sm:p-6">
       {heroImage ? (
-        <div className="mb-6">
+        <div className="mb-5 sm:mb-6">
           <ImageWithFallback
             src={heroImage.src}
             alt={heroImage.alt}
@@ -39,45 +39,45 @@ export default function UnitCard({
         </div>
       ) : null}
 
-      <div className="space-y-3">
-        <p className="text-xs font-semibold tracking-[0.24em] text-stone-500 uppercase">
+      <div className="space-y-2.5 sm:space-y-3">
+        <p className="text-[11px] font-semibold tracking-[0.2em] text-stone-500 uppercase sm:text-xs sm:tracking-[0.24em]">
           Unit Homestay
         </p>
-        <h3 className="text-2xl font-semibold text-stone-900">{unit.name}</h3>
-        <p className="text-sm leading-7 text-stone-600">
+        <h3 className="text-xl font-semibold text-stone-900 sm:text-2xl">{unit.name}</h3>
+        <p className="text-sm leading-6 text-stone-600 sm:leading-7">
           {unit.description || "Maklumat unit akan dikemas kini tidak lama lagi."}
         </p>
       </div>
 
-      <div className="mt-6 grid gap-3 rounded-[1.5rem] bg-stone-50 p-4 text-sm text-stone-700 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3 rounded-[1.35rem] bg-stone-50 p-3.5 text-sm text-stone-700 sm:mt-6 sm:rounded-[1.5rem] sm:p-4 sm:grid-cols-2">
         <div>
-          <p className="text-stone-500">Bilik tidur</p>
+          <p className="text-xs text-stone-500 sm:text-sm">Bilik tidur</p>
           <p className="mt-1 font-semibold text-stone-900">
             {resolvedBedrooms} bilik
           </p>
         </div>
         <div>
-          <p className="text-stone-500">Tetamu maksimum</p>
+          <p className="text-xs text-stone-500 sm:text-sm">Kapasiti</p>
           <p className="mt-1 font-semibold text-stone-900">
-            maksimum {resolvedGuests} tetamu
+            Maksimum {resolvedGuests} tetamu
           </p>
         </div>
         <div>
-          <p className="text-stone-500">Harga promosi</p>
+          <p className="text-xs text-stone-500 sm:text-sm">Harga promosi</p>
           <p className="mt-1 font-semibold text-[color:var(--color-accent-deep)]">
             {formatCurrency(resolvedPromoPrice)} / malam
           </p>
         </div>
         <div>
-          <p className="text-stone-500">Harga biasa</p>
-          <p className="mt-1 font-semibold text-stone-900 line-through decoration-stone-300">
-            harga biasa {formatCurrency(resolvedNormalPrice)} / malam
+          <p className="text-xs text-stone-500 sm:text-sm">Harga biasa</p>
+          <p className="mt-1 font-semibold text-stone-500 line-through decoration-stone-300">
+            {formatCurrency(resolvedNormalPrice)}
           </p>
         </div>
         <div className="sm:col-span-2">
-          <p className="text-stone-500">Deposit</p>
+          <p className="text-xs text-stone-500 sm:text-sm">Deposit</p>
           <p className="mt-1 font-semibold text-stone-900">
-            deposit {formatCurrency(resolvedDeposit)}
+            {formatCurrency(resolvedDeposit)} deposit
           </p>
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function UnitCard({
         </div>
       ) : null}
 
-      <div className="mt-6 flex flex-1 items-end">
+      <div className="mt-5 flex flex-1 items-end sm:mt-6">
         <div className={`flex w-full flex-col gap-3 ${compact ? "" : "sm:flex-row"}`}>
           <Link
             href={`/booking?unit=${unit.slug}`}

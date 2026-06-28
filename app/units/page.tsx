@@ -55,15 +55,15 @@ export default function UnitsPage() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="max-w-3xl space-y-4">
-          <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+          <p className="text-[11px] font-semibold tracking-[0.18em] text-stone-500 uppercase sm:text-sm sm:tracking-[0.24em]">
             Unit Homestay
           </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-stone-950">
+          <h1 className="text-3xl font-semibold tracking-tight text-stone-950 sm:text-4xl">
             Pilih unit yang sesuai untuk tempahan anda
           </h1>
-          <p className="text-lg leading-8 text-stone-700">
+          <p className="text-base leading-7 text-stone-700 sm:text-lg sm:leading-8">
             Nonamanis dan Serimuka masing-masing mempunyai 3 bilik, sesuai
             untuk sehingga 10 tetamu, dan terletak bersebelahan untuk kemudahan
             kumpulan.
