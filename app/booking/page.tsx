@@ -1,6 +1,7 @@
 import BookingForm from "@/components/BookingForm";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { siteConfig } from "@/lib/siteConfig";
 
 type BookingPageProps = {
   searchParams: Promise<{
@@ -32,10 +33,12 @@ export default async function BookingPage({ searchParams }: BookingPageProps) {
             </p>
 
             <div className="mt-8 space-y-4 rounded-[1.5rem] border border-white/70 bg-white/75 p-5 text-sm leading-7 text-stone-700">
-              <p>Harga promosi: RM200 semalam</p>
-              <p>Harga biasa: RM250 semalam</p>
-              <p>Deposit: RM150 setiap unit</p>
-              <p>Setiap unit mempunyai 3 bilik dan muat sehingga 10 tetamu.</p>
+              <p>Harga promosi: RM{siteConfig.promoPrice} semalam</p>
+              <p>Harga biasa: RM{siteConfig.normalPrice} semalam</p>
+              <p>Deposit: RM{siteConfig.deposit} setiap unit</p>
+              <p>
+                Setiap unit mempunyai 3 bilik dan muat sehingga {siteConfig.maxGuestsPerUnit} tetamu.
+              </p>
             </div>
           </section>
 

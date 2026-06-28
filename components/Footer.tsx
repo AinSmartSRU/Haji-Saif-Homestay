@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { buildWhatsAppUrl, SITE_LOCATION, SITE_NAME } from "@/lib/site";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function Footer() {
   return (
@@ -11,6 +12,22 @@ export default function Footer() {
             Homestay moden dan selesa di {SITE_LOCATION} untuk keluarga,
             kumpulan, dan pelancong yang mahukan penginapan praktikal.
           </p>
+          <div className="space-y-1 pt-2 text-sm text-stone-300">
+            <p>Admin: {siteConfig.adminName}</p>
+            <p>
+              WhatsApp:{" "}
+              <a
+                href={buildWhatsAppUrl(
+                  `Hi ${siteConfig.adminName}, saya ingin bertanya tentang ${siteConfig.siteName}.`,
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-stone-100 underline decoration-stone-500 underline-offset-4 transition hover:text-[color:var(--color-accent)]"
+              >
+                {siteConfig.whatsappDisplay}
+              </a>
+            </p>
+          </div>
         </div>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
           <Link
@@ -21,7 +38,7 @@ export default function Footer() {
           </Link>
           <a
             href={buildWhatsAppUrl(
-              "Hi, saya berminat untuk membuat tempahan di Haji Saif Homestay Putatan.",
+              `Hi ${siteConfig.adminName}, saya ingin bertanya tentang ${siteConfig.siteName}.`,
             )}
             target="_blank"
             rel="noreferrer"

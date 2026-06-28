@@ -1,7 +1,7 @@
-export const WHATSAPP_NUMBER = "60123456789";
+import { siteConfig, createWhatsAppLink } from "@/lib/siteConfig";
 
-export const SITE_NAME = "Haji Saif Homestay Putatan";
-export const SITE_LOCATION = "Putatan, Sabah";
+export const SITE_NAME = siteConfig.siteName;
+export const SITE_LOCATION = siteConfig.location;
 export const SITE_TAGLINE =
   "2 unit rumah homestay bersebelahan, sesuai untuk keluarga dan kumpulan.";
 
@@ -23,9 +23,9 @@ export const homepageUnits = [
 export const facilities = [
   "2 unit homestay bersebelahan untuk tempahan berkumpulan",
   "3 bilik tidur bagi setiap rumah",
-  "Ruang sesuai untuk sehingga 10 tetamu setiap unit",
-  "Harga promosi RM200 semalam",
-  "Deposit hanya RM150 bagi setiap unit",
+  `Ruang sesuai untuk sehingga ${siteConfig.maxGuestsPerUnit} tetamu setiap unit`,
+  `Harga promosi RM${siteConfig.promoPrice} semalam`,
+  `Deposit hanya RM${siteConfig.deposit} bagi setiap unit`,
   "Lokasi mudah diakses untuk keluarga, pelancong, dan urusan kerja",
 ];
 
@@ -103,5 +103,19 @@ export function formatDate(value: string) {
 }
 
 export function buildWhatsAppUrl(message: string) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return createWhatsAppLink(message);
+}
+
+export function normalizeMalaysianWhatsAppNumber(phone: string) {
+  const cleaned = phone.replace(/[\s\-+()]/g, "");
+
+  if (cleaned.startsWith("60") && cleaned.length >= 10) {
+    return cleaned;
+  }
+
+  if (cleaned.startsWith("0") && cleaned.length >= 10) {
+    return `60${cleaned.slice(1)}`;
+  }
+
+  return null;
 }

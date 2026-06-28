@@ -11,6 +11,7 @@ import {
   SITE_NAME,
   SITE_TAGLINE,
 } from "@/lib/site";
+import { siteConfig } from "@/lib/siteConfig";
 
 const quickInfo = [
   "RM200/malam promo",
@@ -25,10 +26,10 @@ const previewUnits = homepageUnits.map((unit) => ({
   slug: unit.slug,
   description: unit.description,
   bedrooms: 3,
-  max_guests: 10,
-  normal_price: 250,
-  promo_price: 200,
-  deposit: 150,
+  max_guests: siteConfig.maxGuestsPerUnit,
+  normal_price: siteConfig.normalPrice,
+  promo_price: siteConfig.promoPrice,
+  deposit: siteConfig.deposit,
 }));
 
 export default function HomePage() {
@@ -60,7 +61,7 @@ export default function HomePage() {
                 </Link>
                 <a
                   href={buildWhatsAppUrl(
-                    "Hi, saya ingin semak ketersediaan Haji Saif Homestay Putatan.",
+                    `Hi ${siteConfig.adminName}, saya berminat untuk bertanya tentang ${siteConfig.siteName}.`,
                   )}
                   target="_blank"
                   rel="noreferrer"

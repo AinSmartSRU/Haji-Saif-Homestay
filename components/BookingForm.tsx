@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import {
   buildWhatsAppUrl,
+  formatDate,
   type Unit,
   type BookingStatus,
 } from "@/lib/site";
+import { siteConfig } from "@/lib/siteConfig";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 
 type BookingFormProps = {
@@ -34,10 +36,12 @@ const initialFormState: FormState = {
 
 type SuccessState = {
   guestName: string;
+  phone: string;
   unitName: string;
   checkIn: string;
   checkOut: string;
   guests: string;
+  notes: string;
 };
 
 export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
@@ -116,7 +120,11 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
 
     const guestCount = Number(form.guests);
 
-    if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 10) {
+    if (
+      !Number.isInteger(guestCount) ||
+      guestCount < 1 ||
+      guestCount > siteConfig.maxGuestsPerUnit
+    ) {
       setError("Jumlah tetamu mestilah antara 1 hingga 10 orang.");
       return;
     }
@@ -154,10 +162,12 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
 
     setSuccess({
       guestName: form.guest_name,
+      phone: form.phone,
       unitName: selectedUnit?.name ?? "Unit pilihan",
       checkIn: form.check_in,
       checkOut: form.check_out,
       guests: form.guests,
+      notes: form.notes,
     });
     setForm((current) => ({
       ...initialFormState,
@@ -166,7 +176,7 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
   }
 
   const whatsappMessage = success
-    ? `Hi, saya berminat booking Haji Saif Homestay. Nama: ${success.guestName}, Unit: ${success.unitName}, Check-in: ${success.checkIn}, Check-out: ${success.checkOut}, Tetamu: ${success.guests}`
+    ? `Hi ${siteConfig.adminName}, saya telah hantar permintaan tempahan ${siteConfig.siteName}.\n\nNama: ${success.guestName}\nTelefon: ${success.phone}\nUnit: ${success.unitName}\nCheck-in: ${success.checkIn}\nCheck-out: ${success.checkOut}\nJumlah tetamu: ${success.guests}\nNota: ${success.notes || "-"}\n\nSaya ingin semak ketersediaan dan teruskan tempahan jika slot masih kosong.`
     : "";
 
   return (
@@ -188,18 +198,54 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
       ) : null}
 
       {success ? (
-        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm text-emerald-800">
-          <p className="font-semibold">Permintaan tempahan berjaya dihantar.</p>
-          <p className="mt-1">
-            Sila teruskan ke WhatsApp untuk memudahkan pengesahan tempahan anda.
+        <div className="mt-6 rounded-[2rem] border border-emerald-200 bg-[linear-gradient(180deg,_#f4fbf6,_#ecf8f0)] p-6 text-sm text-stone-800 shadow-[0_18px_50px_rgba(41,84,54,0.08)]">
+          <p className="text-2xl font-semibold text-stone-950">
+            Permintaan tempahan diterima
           </p>
+          <p className="mt-3 max-w-2xl leading-7 text-stone-700">
+            Terima kasih. Permintaan tempahan anda telah dihantar kepada pihak
+            Haji Saif Homestay. Tempahan hanya disahkan selepas slot disemak
+            dan deposit diterima.
+          </p>
+          <div className="mt-6 grid gap-4 rounded-[1.5rem] border border-emerald-100 bg-white/90 p-5 sm:grid-cols-2">
+            <div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Nama</p>
+              <p className="mt-2 font-medium text-stone-900">{success.guestName}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">No. telefon</p>
+              <p className="mt-2 font-medium text-stone-900">{success.phone}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Unit</p>
+              <p className="mt-2 font-medium text-stone-900">{success.unitName}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Jumlah tetamu</p>
+              <p className="mt-2 font-medium text-stone-900">{success.guests}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Check-in</p>
+              <p className="mt-2 font-medium text-stone-900">{formatDate(success.checkIn)}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Check-out</p>
+              <p className="mt-2 font-medium text-stone-900">{formatDate(success.checkOut)}</p>
+            </div>
+            {success.notes ? (
+              <div className="sm:col-span-2">
+                <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">Nota</p>
+                <p className="mt-2 leading-7 text-stone-700">{success.notes}</p>
+              </div>
+            ) : null}
+          </div>
           <a
             href={buildWhatsAppUrl(whatsappMessage)}
             target="_blank"
             rel="noreferrer"
-            className="mt-4 inline-flex rounded-full bg-emerald-700 px-4 py-2 font-semibold text-white transition hover:bg-emerald-800"
+            className="mt-6 inline-flex rounded-full bg-emerald-700 px-5 py-3 font-semibold text-white transition hover:bg-emerald-800"
           >
-            Buka WhatsApp
+            WhatsApp Admin
           </a>
         </div>
       ) : null}
@@ -211,6 +257,11 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
       ) : units.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-stone-300 px-4 py-6 text-sm text-stone-600">
           Tiada unit aktif tersedia buat masa ini.
+        </div>
+      ) : success ? (
+        <div className="mt-8 rounded-[1.75rem] border border-dashed border-stone-300 bg-stone-50/80 px-5 py-6 text-sm leading-7 text-stone-600">
+          Borang telah dihantar. Jika anda mahu membuat permintaan lain, muat
+          semula halaman ini atau kembali semula kemudian.
         </div>
       ) : (
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
@@ -231,7 +282,7 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
                 value={form.phone}
                 onChange={(event) => updateField("phone", event.target.value)}
                 className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
-                placeholder="Contoh: 60123456789"
+                placeholder={`Contoh: ${siteConfig.whatsappDisplay}`}
                 required
               />
             </label>
@@ -301,6 +352,10 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
           >
             {submitting ? "Menghantar..." : "Hantar Permintaan Tempahan"}
           </button>
+          <p className="text-sm leading-7 text-stone-600">
+            Nota: Tempahan hanya disahkan selepas pihak homestay mengesahkan
+            slot dan deposit diterima.
+          </p>
         </form>
       )}
     </div>

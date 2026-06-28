@@ -5,11 +5,13 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import {
   formatDate,
+  normalizeMalaysianWhatsAppNumber,
   type BookingStatus,
   type BookingWithUnitRow,
   type BookingWithUnit,
   type Unit,
 } from "@/lib/site";
+import { siteConfig } from "@/lib/siteConfig";
 import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 
 export default function AdminPage() {
@@ -106,6 +108,19 @@ export default function AdminPage() {
     return matchesStatus && matchesUnit;
   });
 
+  function createGuestWhatsAppLink(booking: BookingWithUnit) {
+    const normalizedPhone = normalizeMalaysianWhatsAppNumber(booking.phone);
+
+    if (!normalizedPhone) {
+      return null;
+    }
+
+    const unitName = booking.units?.name ?? "unit pilihan anda";
+    const message = `Hi, ini ${siteConfig.adminName} dari ${siteConfig.siteName}. Kami ingin follow up permintaan tempahan anda untuk ${unitName} pada ${booking.check_in} hingga ${booking.check_out}.`;
+
+    return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(message)}`;
+  }
+
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
       <Navbar />
@@ -165,10 +180,7 @@ export default function AdminPage() {
         ) : (
           <div className="mt-8 grid gap-5">
             {filteredBookings.map((booking) => (
-              <article
-                key={booking.id}
-                className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)]"
-              >
+              <article key={booking.id} className="rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)]">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="grid flex-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     <div>
@@ -234,6 +246,24 @@ export default function AdminPage() {
                   </div>
 
                   <div className="flex flex-col gap-3 lg:w-52">
+                    {createGuestWhatsAppLink(booking) ? (
+                      <a
+                        href={createGuestWhatsAppLink(booking) ?? undefined}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-[color:var(--color-accent)] bg-[color:var(--color-accent)]/12 px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--color-accent-deep)] transition hover:bg-[color:var(--color-accent)]/20"
+                      >
+                        WhatsApp Guest
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="rounded-full border border-stone-200 bg-stone-100 px-4 py-2.5 text-sm font-semibold text-stone-400"
+                      >
+                        WhatsApp Guest
+                      </button>
+                    )}
                     <button
                       type="button"
                       disabled={isPending}
