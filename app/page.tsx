@@ -2,14 +2,18 @@ import Link from "next/link";
 import {
   ArrowRight,
   Bed,
+  Building2,
   Car,
   CalendarDays,
   ClipboardList,
+  Lock,
+  MapPin,
   Droplets,
   MessageCircle,
   Snowflake,
   Tv,
   Utensils,
+  Users,
   WashingMachine,
   Wifi,
 } from "lucide-react";
@@ -53,21 +57,25 @@ const whyChooseUsCards = [
     title: "2 Unit Bersebelahan",
     description:
       "Sesuai untuk keluarga besar atau dua keluarga yang datang bersama.",
+    icon: Building2,
   },
   {
     title: "Privasi Penuh",
     description:
       "Tiada lobby sesak atau bilik berasingan. Rumah ini untuk keluarga dan kumpulan anda.",
+    icon: Lock,
   },
   {
     title: "Ruang Untuk Berkumpul",
     description:
       "Boleh makan bersama, berbual, berehat dan rasa seperti di rumah sendiri.",
+    icon: Users,
   },
   {
     title: "Lokasi Putatan",
     description:
       "Mudah diakses untuk urusan sekitar Putatan dan Kota Kinabalu. Lokasi homestay sekitar 7km dari Lapangan Terbang Antarabangsa Kota Kinabalu.",
+    icon: MapPin,
   },
 ];
 
@@ -253,15 +261,18 @@ export default function HomePage() {
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
-                {whyChooseUsCards.map((card, index) => (
+                {whyChooseUsCards.map((card) => {
+                  const Icon = card.icon;
+
+                  return (
                   <article
                     key={card.title}
                     className="flex h-full flex-col rounded-[1.5rem] border border-white/10 bg-white/8 p-5 shadow-[0_14px_36px_rgba(15,10,7,0.22)] backdrop-blur-sm transition duration-200 hover:-translate-y-1 hover:shadow-[0_20px_42px_rgba(15,10,7,0.28)] sm:rounded-[1.75rem] sm:p-6"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--color-accent)]/18 text-sm font-semibold text-[color:var(--color-accent)] sm:h-11 sm:w-11">
-                      0{index + 1}
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[color:var(--color-accent)]/18 bg-[color:var(--color-accent)]/14 text-[color:var(--color-accent)] shadow-[0_10px_25px_rgba(15,10,7,0.16)]">
+                      <Icon size={30} strokeWidth={2} />
                     </div>
-                    <div className="mt-4 flex flex-1 flex-col gap-2.5 sm:mt-5 sm:gap-3">
+                    <div className="mt-4 flex flex-1 flex-col gap-2.5 text-center sm:mt-5 sm:gap-3">
                       <h3 className="text-lg font-semibold text-white sm:text-xl">
                         {card.title}
                       </h3>
@@ -270,7 +281,8 @@ export default function HomePage() {
                       </p>
                     </div>
                   </article>
-                ))}
+                );
+                })}
               </div>
             </div>
           </div>
