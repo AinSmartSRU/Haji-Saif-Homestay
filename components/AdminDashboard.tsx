@@ -4,6 +4,15 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
+  bookingBlockSources,
+  bookingBlockUnits,
+  getBookingBlockSourceLabel,
+  type BookingBlock,
+  type BookingBlockSource,
+  type BookingBlockUnit,
+} from "@/lib/bookingBlocks";
+import { getBookedNightDates, normalizeDateString } from "@/lib/bookingDates";
+import {
   formatDate,
   normalizeMalaysianWhatsAppNumber,
   type BookingStatus,
@@ -18,20 +27,43 @@ type AdminDashboardProps = {
 };
 
 type AdminBookingsResponse = {
+  blocks?: BookingBlock[];
+  blocksTableReady?: boolean;
   bookings: BookingWithUnit[];
   error?: string;
   units: Unit[];
+};
+
+type BlockFormState = {
+  check_in: string;
+  check_out: string;
+  reason: string;
+  source: BookingBlockSource;
+  unit: BookingBlockUnit;
+};
+
+const initialBlockFormState: BlockFormState = {
+  check_in: "",
+  check_out: "",
+  reason: "",
+  source: "manual",
+  unit: "Nonamanis",
 };
 
 export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
   const router = useRouter();
   const [bookings, setBookings] = useState<BookingWithUnit[]>([]);
   const [units, setUnits] = useState<Unit[]>([]);
+  const [blocks, setBlocks] = useState<BookingBlock[]>([]);
+  const [blockForm, setBlockForm] = useState<BlockFormState>(initialBlockFormState);
   const [statusFilter, setStatusFilter] = useState("all");
   const [unitFilter, setUnitFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [blocksTableReady, setBlocksTableReady] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [blockError, setBlockError] = useState<string | null>(null);
+  const [blockSuccess, setBlockSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -46,7 +78,8 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
 
       if (!response.ok) {
         setError(
-          result.error ?? "Data tempahan tidak dapat dimuatkan sekarang. Sila cuba lagi.",
+          result.error ??
+            "Data tempahan tidak dapat dimuatkan sekarang. Sila cuba lagi.",
         );
 
         if (response.status === 401 || response.status === 403) {
@@ -59,6 +92,8 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
 
       setBookings(result.bookings ?? []);
       setUnits(result.units ?? []);
+      setBlocks(result.blocks ?? []);
+      setBlocksTableReady(result.blocksTableReady ?? true);
       setLoading(false);
     }
 
@@ -70,6 +105,16 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
     await supabase.auth.signOut();
     router.push("/admin/login");
     router.refresh();
+  }
+
+  function updateBlockField<K extends keyof BlockFormState>(
+    field: K,
+    value: BlockFormState[K],
+  ) {
+    setBlockForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
   }
 
   async function updateStatus(bookingId: string, status: BookingStatus) {
@@ -106,6 +151,87 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
     });
   }
 
+  async function createBlock(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBlockError(null);
+    setBlockSuccess(null);
+
+    if (
+      !blockForm.unit ||
+      !blockForm.check_in ||
+      !blockForm.check_out ||
+      normalizeDateString(blockForm.check_out) <=
+        normalizeDateString(blockForm.check_in)
+    ) {
+      setBlockError("Sila pilih tarikh check-in dan check-out yang sah.");
+      return;
+    }
+
+    startTransition(() => {
+      void (async () => {
+        const response = await fetch("/api/admin/blocks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(blockForm),
+        });
+
+        const result = (await response.json()) as {
+          block?: BookingBlock;
+          error?: string;
+          message?: string;
+        };
+
+        if (!response.ok || !result.block) {
+          setBlockError(result.error ?? "Block tarikh tidak berjaya disimpan.");
+          return;
+        }
+
+        setBlocks((current) => [result.block!, ...current]);
+        setBlockForm((current) => ({
+          ...initialBlockFormState,
+          unit: current.unit,
+          source: current.source,
+        }));
+        setBlockSuccess(result.message ?? "Tarikh berjaya diblock.");
+        setBlocksTableReady(true);
+      })();
+    });
+  }
+
+  async function removeBlock(blockId: string) {
+    setBlockError(null);
+    setBlockSuccess(null);
+
+    startTransition(() => {
+      void (async () => {
+        const response = await fetch("/api/admin/blocks", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ blockId }),
+        });
+
+        const result = (await response.json()) as {
+          error?: string;
+          message?: string;
+        };
+
+        if (!response.ok) {
+          setBlockError(
+            result.error ?? "Block tarikh tidak berjaya dibuka semula.",
+          );
+          return;
+        }
+
+        setBlocks((current) => current.filter((block) => block.id !== blockId));
+        setBlockSuccess(result.message ?? "Block tarikh telah dibuka semula.");
+      })();
+    });
+  }
+
   const filteredBookings = bookings.filter((booking) => {
     const matchesStatus =
       statusFilter === "all" || booking.status === statusFilter;
@@ -138,7 +264,8 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
             Dashboard ringkas untuk semak dan kemas kini booking
           </h1>
           <p className="text-sm text-stone-600">
-            Login sebagai <span className="font-medium text-stone-900">{adminEmail}</span>
+            Login sebagai{" "}
+            <span className="font-medium text-stone-900">{adminEmail}</span>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -158,6 +285,214 @@ export default function AdminDashboard({ adminEmail }: AdminDashboardProps) {
           </button>
         </div>
       </div>
+
+      <section className="mt-8 rounded-[2rem] border border-stone-200 bg-white p-6 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:p-8">
+        <div className="max-w-3xl space-y-3">
+          <p className="text-sm font-semibold tracking-[0.24em] text-stone-500 uppercase">
+            Block Tarikh
+          </p>
+          <h2 className="text-3xl font-semibold tracking-tight text-stone-950">
+            Block Tarikh
+          </h2>
+          <p className="text-sm leading-7 text-stone-600">
+            Gunakan bahagian ini untuk block tarikh yang sudah ditempah dari
+            Booking.com, Agoda, WhatsApp, atau kegunaan sendiri.
+          </p>
+        </div>
+
+        {!blocksTableReady ? (
+          <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-7 text-amber-900">
+            Jadual <span className="font-semibold">booking_blocks</span> belum
+            tersedia. Jalankan SQL setup di Supabase dahulu untuk aktifkan
+            fungsi block tarikh.
+          </div>
+        ) : null}
+
+        {blockError ? (
+          <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {blockError}
+          </div>
+        ) : null}
+
+        {blockSuccess ? (
+          <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            {blockSuccess}
+          </div>
+        ) : null}
+
+        <form className="mt-6 space-y-5" onSubmit={createBlock}>
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Unit
+              <select
+                value={blockForm.unit}
+                onChange={(event) =>
+                  updateBlockField("unit", event.target.value as BookingBlockUnit)
+                }
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              >
+                {bookingBlockUnits.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Tarikh check-in
+              <input
+                type="date"
+                value={blockForm.check_in}
+                onChange={(event) => updateBlockField("check_in", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700">
+              Tarikh check-out
+              <input
+                type="date"
+                value={blockForm.check_out}
+                onChange={(event) => updateBlockField("check_out", event.target.value)}
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700 md:col-span-2 xl:col-span-1">
+              Sumber booking
+              <select
+                value={blockForm.source}
+                onChange={(event) =>
+                  updateBlockField(
+                    "source",
+                    event.target.value as BookingBlockSource,
+                  )
+                }
+                className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                required
+              >
+                {bookingBlockSources.map((source) => (
+                  <option key={source} value={source}>
+                    {getBookingBlockSourceLabel(source)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-2 text-sm font-medium text-stone-700 md:col-span-2 xl:col-span-2">
+              Catatan / sebab
+              <textarea
+                value={blockForm.reason}
+                onChange={(event) => updateBlockField("reason", event.target.value)}
+                className="min-h-28 w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 outline-none transition focus:border-stone-400 focus:bg-white"
+                placeholder="Contoh: Booking Agoda, maintenance, family use, atau tempahan manual"
+              />
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isPending || !blocksTableReady}
+            className="inline-flex rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+          >
+            Block Tarikh
+          </button>
+        </form>
+
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-stone-900">
+            Block tarikh aktif
+          </h3>
+          {blocks.length === 0 ? (
+            <div className="mt-4 rounded-[1.5rem] border border-dashed border-stone-300 px-5 py-6 text-sm text-stone-600">
+              Tiada block tarikh aktif buat masa ini.
+            </div>
+          ) : (
+            <div className="mt-4 grid gap-4">
+              {blocks.map((block) => (
+                <article
+                  key={block.id}
+                  className="rounded-[1.5rem] border border-stone-200 bg-stone-50/70 p-5"
+                >
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="grid flex-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Unit
+                        </p>
+                        <p className="mt-2 font-semibold text-stone-900">
+                          {block.unit}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Check-in
+                        </p>
+                        <p className="mt-2 text-sm text-stone-700">
+                          {formatDate(block.check_in)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Check-out
+                        </p>
+                        <p className="mt-2 text-sm text-stone-700">
+                          {formatDate(block.check_out)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Malam diblock
+                        </p>
+                        <p className="mt-2 text-sm text-stone-700">
+                          {getBookedNightDates(block.check_in, block.check_out).length}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Source
+                        </p>
+                        <p className="mt-2">
+                          <span className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-semibold text-stone-700">
+                            {getBookingBlockSourceLabel(block.source)}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Dicipta
+                        </p>
+                        <p className="mt-2 text-sm text-stone-700">
+                          {formatDate(block.created_at)}
+                        </p>
+                      </div>
+                      <div className="sm:col-span-2 xl:col-span-3">
+                        <p className="text-xs font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                          Sebab
+                        </p>
+                        <p className="mt-2 text-sm leading-7 text-stone-700">
+                          {block.reason || "Tiada catatan tambahan."}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="lg:w-44">
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => removeBlock(block.id)}
+                        className="w-full rounded-full border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:text-stone-400"
+                      >
+                        Buka Block
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       <div className="mt-8 grid gap-4 rounded-[2rem] border border-stone-200 bg-white p-5 shadow-[0_18px_60px_rgba(88,69,46,0.08)] md:grid-cols-2">
         <label className="space-y-2 text-sm font-medium text-stone-700">

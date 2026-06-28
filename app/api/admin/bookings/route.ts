@@ -1,63 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAllowedAdminEmail } from "@/lib/adminAuth";
+import { isBookingBlocksTableMissing, type BookingBlock } from "@/lib/bookingBlocks";
 import type { BookingStatus, BookingWithUnitRow, Unit } from "@/lib/site";
-import {
-  createServerSupabaseClient,
-  isServerSupabaseConfigured,
-} from "@/lib/supabaseServer";
-
-async function requireAdmin() {
-  if (!isServerSupabaseConfigured) {
-    return {
-      error: NextResponse.json(
-        { error: "Supabase belum dikonfigurasi." },
-        { status: 500 },
-      ),
-      supabase: null,
-      user: null,
-    };
-  }
-
-  const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    return {
-      error: NextResponse.json({ error: "Sila login dahulu." }, { status: 401 }),
-      supabase: null,
-      user: null,
-    };
-  }
-
-  if (!isAllowedAdminEmail(user.email)) {
-    return {
-      error: NextResponse.json(
-        { error: "Akaun ini tidak mempunyai akses admin." },
-        { status: 403 },
-      ),
-      supabase: null,
-      user,
-    };
-  }
-
-  return {
-    error: null,
-    supabase,
-    user,
-  };
-}
+import { requireAdminRequest } from "@/lib/adminRequest";
 
 export async function GET() {
-  const auth = await requireAdmin();
+  const auth = await requireAdminRequest();
 
   if (auth.error || !auth.supabase) {
     return auth.error;
   }
 
-  const [bookingsResult, unitsResult] = await Promise.all([
+  const [bookingsResult, unitsResult, blocksResult] = await Promise.all([
     auth.supabase
       .from("bookings")
       .select(
@@ -70,6 +23,13 @@ export async function GET() {
         "id, name, slug, description, bedrooms, max_guests, normal_price, promo_price, deposit",
       )
       .order("name"),
+    auth.supabase
+      .from("booking_blocks")
+      .select(
+        "id, unit, check_in, check_out, source, reason, is_active, created_at, updated_at",
+      )
+      .eq("is_active", true)
+      .order("created_at", { ascending: false }),
   ]);
 
   if (bookingsResult.error || unitsResult.error) {
@@ -88,14 +48,25 @@ export async function GET() {
     }),
   );
 
+  const blocksTableReady = !isBookingBlocksTableMissing(blocksResult.error);
+
+  if (blocksResult.error && blocksTableReady) {
+    return NextResponse.json(
+      { error: "Data block tarikh tidak dapat dimuatkan sekarang. Sila cuba lagi." },
+      { status: 500 },
+    );
+  }
+
   return NextResponse.json({
+    blocks: ((blocksResult.data ?? []) as BookingBlock[]),
+    blocksTableReady,
     bookings,
     units: (unitsResult.data ?? []) as Unit[],
   });
 }
 
 export async function PATCH(request: NextRequest) {
-  const auth = await requireAdmin();
+  const auth = await requireAdminRequest();
 
   if (auth.error || !auth.supabase) {
     return auth.error;

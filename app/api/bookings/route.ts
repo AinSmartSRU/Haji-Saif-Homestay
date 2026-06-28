@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { normalizeDateString, rangesOverlap } from "@/lib/bookingDates";
+import { isBookingBlocksTableMissing } from "@/lib/bookingBlocks";
 import { sendBookingNotification } from "@/lib/email/sendBookingNotification";
 import { siteConfig } from "@/lib/siteConfig";
 import {
@@ -18,6 +19,11 @@ type BookingRequestBody = {
 };
 
 type ConfirmedBooking = {
+  check_in: string;
+  check_out: string;
+};
+
+type ActiveBookingBlock = {
   check_in: string;
   check_out: string;
 };
@@ -133,7 +139,40 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Tarikh ini sudah ditempah untuk unit yang dipilih. Sila pilih tarikh lain.",
+          "Tarikh ini sudah ditempah untuk rumah yang dipilih. Sila pilih tarikh lain.",
+      },
+      { status: 409 },
+    );
+  }
+
+  const { data: activeBlocks, error: blocksError } = await serverSupabase
+    .from("booking_blocks")
+    .select("check_in, check_out")
+    .eq("unit", unit.name)
+    .eq("is_active", true);
+
+  if (blocksError && !isBookingBlocksTableMissing(blocksError)) {
+    return NextResponse.json(
+      { error: "Semakan tarikh tidak berjaya. Sila cuba lagi." },
+      { status: 500 },
+    );
+  }
+
+  const overlapsBlockedDates = ((activeBlocks ?? []) as ActiveBookingBlock[]).some(
+    (block) =>
+      rangesOverlap(
+        block.check_in,
+        block.check_out,
+        body.check_in!,
+        body.check_out!,
+      ),
+  );
+
+  if (overlapsBlockedDates) {
+    return NextResponse.json(
+      {
+        error:
+          "Tarikh ini sudah ditempah untuk rumah yang dipilih. Sila pilih tarikh lain.",
       },
       { status: 409 },
     );

@@ -1,15 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { type BookingBlockUnit } from "@/lib/bookingBlocks";
 import { getBookedNightDates, normalizeDateString } from "@/lib/bookingDates";
 import { type Unit } from "@/lib/site";
-import { isSupabaseConfigured, supabase } from "@/lib/supabaseClient";
 
 type CalendarBooking = {
   id: string;
   unit_id: string;
   check_in: string;
   check_out: string;
+};
+
+type CalendarBlock = {
+  check_in: string;
+  check_out: string;
+  unit: BookingBlockUnit;
 };
 
 type DayState = "available" | "booked";
@@ -63,6 +69,7 @@ const weekdayLabels = ["ISN", "SEL", "RAB", "KHA", "JUM", "SAB", "AHD"];
 export default function BookingCalendar() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [bookings, setBookings] = useState<CalendarBooking[]>([]);
+  const [blocks, setBlocks] = useState<CalendarBlock[]>([]);
   const [selectedUnitId, setSelectedUnitId] = useState<string>("");
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const now = new Date();
@@ -73,37 +80,29 @@ export default function BookingCalendar() {
 
   useEffect(() => {
     async function loadCalendarData() {
-      if (!isSupabaseConfigured) {
-        setError(
-          "Konfigurasi Supabase belum lengkap. Sila tetapkan NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-        );
-        setLoading(false);
-        return;
-      }
+      const response = await fetch("/api/availability", {
+        cache: "no-store",
+      });
+      const result = (await response.json()) as {
+        bookings?: CalendarBooking[];
+        blocks?: CalendarBlock[];
+        error?: string;
+        units?: Unit[];
+      };
 
-      const [unitsResult, bookingsResult] = await Promise.all([
-        supabase
-          .from("units")
-          .select("id, name, slug, description, bedrooms, max_guests, normal_price, promo_price, deposit, is_active")
-          .eq("is_active", true)
-          .order("name"),
-        supabase
-          .from("bookings")
-          .select("id, unit_id, check_in, check_out")
-          .eq("status", "confirmed"),
-      ]);
-
-      if (unitsResult.error || bookingsResult.error) {
+      if (!response.ok) {
         setError("Kalendar tempahan tidak dapat dimuatkan sekarang. Sila cuba lagi.");
         setLoading(false);
         return;
       }
 
-      const loadedUnits = (unitsResult.data ?? []) as Unit[];
-      const loadedBookings = (bookingsResult.data ?? []) as CalendarBooking[];
+      const loadedUnits = result.units ?? [];
+      const loadedBookings = result.bookings ?? [];
+      const loadedBlocks = result.blocks ?? [];
 
       setUnits(loadedUnits);
       setBookings(loadedBookings);
+      setBlocks(loadedBlocks);
       setSelectedUnitId((current) => current || loadedUnits[0]?.id || "");
       setLoading(false);
     }
@@ -122,6 +121,16 @@ export default function BookingCalendar() {
     [bookings, selectedUnitId],
   );
 
+  const selectedUnitBlocks = useMemo(() => {
+    const selectedUnitName = units.find((unit) => unit.id === selectedUnitId)?.name;
+
+    if (!selectedUnitName) {
+      return [];
+    }
+
+    return blocks.filter((block) => block.unit === selectedUnitName);
+  }, [blocks, selectedUnitId, units]);
+
   const bookedDates = useMemo(() => {
     const dates = new Set<string>();
 
@@ -131,8 +140,14 @@ export default function BookingCalendar() {
       }
     }
 
+    for (const block of selectedUnitBlocks) {
+      for (const date of getBookedNightDates(block.check_in, block.check_out)) {
+        dates.add(date);
+      }
+    }
+
     return dates;
-  }, [selectedUnitBookings]);
+  }, [selectedUnitBlocks, selectedUnitBookings]);
 
   const monthCells = useMemo(() => {
     const year = visibleMonth.getFullYear();
