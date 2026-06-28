@@ -36,20 +36,6 @@ const facilityHighlights = [
   "2 unit rumah bersebelahan",
 ];
 
-const heroValuePoints = [
-  "Rumah bersebelahan",
-  "Ruang tamu & dapur",
-  "Parking disediakan",
-  "Deposit RM100",
-];
-
-const heroStats = [
-  "2 Unit",
-  "3 Bilik",
-  "10 Tetamu/unit",
-  "RM195 Promo",
-];
-
 const featureCards = [
   {
     title: "2 unit bersebelahan",
@@ -98,7 +84,7 @@ export default function HomePage() {
             }}
           />
           <div className="relative mx-auto flex min-h-[80vh] w-full max-w-6xl items-center px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-            <div className="max-w-3xl space-y-8 text-white">
+            <div className="max-w-3xl space-y-6 text-white">
               <div className="space-y-5">
                 <h1 className="max-w-4xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
                   Dua rumah. Satu kenangan.
@@ -109,16 +95,6 @@ export default function HomePage() {
                   berkumpul betul-betul, bukan sekadar tidur berdekatan. Lebih
                   privasi. Lebih ruang. Lebih rasa macam rumah sendiri.
                 </p>
-              </div>
-              <div className="grid gap-3 text-sm text-stone-100 sm:grid-cols-2 lg:grid-cols-3">
-                {heroValuePoints.map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl border border-white/12 bg-white/10 px-4 py-3 backdrop-blur-sm"
-                  >
-                    {item}
-                  </div>
-                ))}
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
@@ -151,16 +127,6 @@ export default function HomePage() {
                 >
                   Lihat Lokasi
                 </a>
-              </div>
-              <div className="grid max-w-2xl grid-cols-2 gap-3 pt-2 sm:grid-cols-4">
-                {heroStats.map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-[1.5rem] border border-white/14 bg-white/10 px-4 py-4 text-center backdrop-blur-sm"
-                  >
-                    <p className="text-sm font-semibold text-white">{item}</p>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
