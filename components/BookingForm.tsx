@@ -216,14 +216,16 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
       {success ? (
         <div className="mt-6 rounded-[2rem] border border-emerald-200 bg-[linear-gradient(180deg,_#f4fbf6,_#ecf8f0)] p-6 text-sm text-stone-800 shadow-[0_18px_50px_rgba(41,84,54,0.08)]">
           <p className="text-2xl font-semibold text-stone-950">
-            Permintaan tempahan diterima
+            {success.guestName
+              ? `Terima kasih, ${success.guestName}! Kami akan hubungi anda tidak lama lagi`
+              : "Terima kasih! Kami akan hubungi anda tidak lama lagi"}
           </p>
           <p className="mt-3 max-w-2xl leading-7 text-stone-700">
-            Permintaan tempahan anda telah diterima. Admin akan semak slot dan
-            hubungi anda melalui WhatsApp.
+            Butiran tempahan anda sudah kami terima. Pihak Haji Saif Homestay
+            akan WhatsApp anda untuk sahkan tarikh dan proses bayaran.
           </p>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-stone-600">
-            Tempahan hanya disahkan selepas slot disemak dan deposit diterima.
+            Pastikan nombor WhatsApp anda aktif ya.
           </p>
           <div className="mt-6 grid gap-4 rounded-[1.5rem] border border-emerald-100 bg-white/90 p-5 sm:grid-cols-2">
             <div>
@@ -263,7 +265,7 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
             rel="noreferrer"
             className="mt-6 inline-flex rounded-full bg-emerald-700 px-5 py-3 font-semibold text-white transition hover:bg-emerald-800"
           >
-            WhatsApp Admin
+            WhatsApp Haji Saif Sekarang
           </a>
         </div>
       ) : null}
@@ -278,8 +280,7 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
         </div>
       ) : success ? (
         <div className="mt-8 rounded-[1.75rem] border border-dashed border-stone-300 bg-stone-50/80 px-5 py-6 text-sm leading-7 text-stone-600">
-          Borang telah dihantar. Jika anda mahu membuat permintaan lain, muat
-          semula halaman ini atau kembali semula kemudian.
+          Nak buat tempahan lain? Reload halaman ini.
         </div>
       ) : (
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
