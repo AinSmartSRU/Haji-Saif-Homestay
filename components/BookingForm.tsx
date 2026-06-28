@@ -368,12 +368,8 @@ export default function BookingForm({ initialUnitSlug }: BookingFormProps) {
               Semak kalendar tempahan
             </Link>
             <p>
-              Tarikh yang masih kosong boleh ditempah. Kami akan sahkan
-              ketersediaan semasa kami hubungi anda.
-            </p>
-            <p>
-              Hanya tempahan yang telah disahkan akan mengunci tarikh di
-              kalendar.
+              Tarikh yang bertanda dalam kalendar dah ada orang book. Yang
+              lain masih kosong — kami akan confirm bila kami WhatsApp anda.
             </p>
           </div>
 
