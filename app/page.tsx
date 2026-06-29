@@ -299,10 +299,9 @@ export default function HomePage() {
                   Semua yang keluarga perlukan, dah ada
                 </h2>
                 <p className="max-w-xl text-sm leading-7 text-stone-700 sm:text-base sm:leading-8">
-                  Kami faham apa yang penting bila datang ramai-ramai. Sebab
-                  itu setiap unit disediakan dengan kemudahan asas yang
-                  membantu keluarga berehat, berkumpul dan bermalam dengan
-                  lebih selesa.
+                  Tak perlu bawa banyak. Tak perlu risau pasal apa yang kurang.
+                  <br />
+                  Semua yang buat keluarga rasa selesa sudah dah kami sediakan.
                 </p>
               </div>
 
