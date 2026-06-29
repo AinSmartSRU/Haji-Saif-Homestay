@@ -298,10 +298,10 @@ export default function HomePage() {
                 <h2 className="max-w-xl text-[1.9rem] font-semibold tracking-tight text-stone-950 sm:text-4xl">
                   Semua yang keluarga perlukan, dah ada
                 </h2>
-                <p className="max-w-xl text-sm leading-7 text-stone-700 sm:text-base sm:leading-8">
-                  Tak perlu bawa banyak. Tak perlu risau pasal apa yang kurang.
-                  <br />
-                  Semua yang buat keluarga rasa selesa sudah dah kami sediakan.
+                <p className="max-w-3xl text-sm leading-relaxed text-stone-700 sm:text-base">
+                  Tak perlu bawa banyak. Tak perlu risau pasal benda yang
+                  kurang. Semua kemudahan asas untuk keluarga berehat,
+                  berkumpul dan bermalam dengan selesa sudah kami sediakan.
                 </p>
               </div>
 
