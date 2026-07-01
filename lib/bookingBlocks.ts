@@ -30,6 +30,21 @@ type MaybeSupabaseError = {
   message?: string;
 } | null;
 
+export function isSupabasePermissionError(error: MaybeSupabaseError) {
+  if (!error) {
+    return false;
+  }
+
+  const message = error.message?.toLowerCase() ?? "";
+
+  return (
+    error.code === "42501" ||
+    message.includes("row-level security") ||
+    message.includes("permission denied") ||
+    message.includes("not allowed")
+  );
+}
+
 export function isBookingBlockUnit(value: string): value is BookingBlockUnit {
   return bookingBlockUnits.includes(value as BookingBlockUnit);
 }
@@ -62,9 +77,13 @@ export function isBookingBlocksTableMissing(error: MaybeSupabaseError) {
     return false;
   }
 
+  const message = error.message?.toLowerCase() ?? "";
+
   return (
     error.code === "42P01" ||
-    error.code === "PGRST205" ||
-    error.message?.toLowerCase().includes("booking_blocks") === true
+    (error.code === "PGRST205" && message.includes("booking_blocks")) ||
+    message.includes('relation "booking_blocks" does not exist') ||
+    message.includes("could not find the table") ||
+    message.includes("booking_blocks does not exist")
   );
 }

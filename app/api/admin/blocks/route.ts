@@ -3,6 +3,7 @@ import {
   isBookingBlocksTableMissing,
   isBookingBlockSource,
   isBookingBlockUnit,
+  isSupabasePermissionError,
 } from "@/lib/bookingBlocks";
 import { normalizeDateString } from "@/lib/bookingDates";
 import { requireAdminRequest } from "@/lib/adminRequest";
@@ -126,8 +127,18 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    if (isSupabasePermissionError(error)) {
+      return NextResponse.json(
+        {
+          error:
+            "Tidak dapat buka block tarikh. Sila semak RLS policy Supabase untuk booking_blocks.",
+        },
+        { status: 403 },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Block tarikh tidak berjaya dibuka semula." },
+      { error: "Gagal buka block tarikh. Sila cuba lagi." },
       { status: 500 },
     );
   }
