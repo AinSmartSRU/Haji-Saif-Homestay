@@ -12,6 +12,10 @@ type ImageWithFallbackProps = {
   aspectClassName?: string;
   className?: string;
   imageClassName?: string;
+  onClick?: () => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void;
+  role?: string;
+  tabIndex?: number;
 };
 
 export default function ImageWithFallback({
@@ -23,12 +27,20 @@ export default function ImageWithFallback({
   aspectClassName = "aspect-[4/3]",
   className = "",
   imageClassName = "",
+  onClick,
+  onKeyDown,
+  role,
+  tabIndex,
 }: ImageWithFallbackProps) {
   const [hasError, setHasError] = useState(false);
 
   return (
     <div
       className={`overflow-hidden rounded-[1.5rem] bg-stone-100 shadow-[0_16px_40px_rgba(88,69,46,0.08)] ${aspectClassName} ${className}`}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      role={role}
+      tabIndex={tabIndex}
     >
       {hasError ? (
         <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(180deg,_#f8f1e6,_#efe3d0)] p-6 text-center text-sm font-medium text-stone-600">

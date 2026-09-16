@@ -3,6 +3,7 @@ import { formatCurrency, type Unit } from "@/lib/site";
 import { siteConfig } from "@/lib/siteConfig";
 import type { GalleryImage } from "@/lib/imageConfig";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import UnitGallery from "@/components/UnitGallery";
 
 type UnitCardProps = {
   unit: Unit;
@@ -27,7 +28,11 @@ export default function UnitCard({
 
   return (
     <article className="flex h-full flex-col rounded-[1.75rem] border border-stone-200 bg-white p-4 shadow-[0_18px_60px_rgba(88,69,46,0.08)] sm:rounded-[2rem] sm:p-6">
-      {heroImage ? (
+      {showGallery && galleryImages.length > 0 ? (
+        <div className="mb-5 sm:mb-6">
+          <UnitGallery images={galleryImages} unitName={unit.name} />
+        </div>
+      ) : heroImage ? (
         <div className="mb-5 sm:mb-6">
           <ImageWithFallback
             src={heroImage.src}
@@ -81,22 +86,6 @@ export default function UnitCard({
           </p>
         </div>
       </div>
-
-      {showGallery && galleryImages.length > 0 ? (
-        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-          {galleryImages.slice(0, 8).map((image) => (
-            <ImageWithFallback
-              key={`${unit.slug}-${image.src}`}
-              src={image.src}
-              alt={image.alt}
-              label={image.label}
-              aspectClassName="aspect-[4/3]"
-              sizes="(min-width: 768px) 20vw, 50vw"
-              className="rounded-[1.25rem]"
-            />
-          ))}
-        </div>
-      ) : null}
 
       <div className="mt-5 flex flex-1 items-end sm:mt-6">
         <div className={`flex w-full flex-col gap-3 ${compact ? "" : "sm:flex-row"}`}>
